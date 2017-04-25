@@ -10,6 +10,7 @@ import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
 import me.libraryaddict.disguise.disguisetypes.watchers.ZombieWatcher;
 
 public class MobDisguise extends TargetedDisguise {
+
     private boolean isAdult;
 
     public MobDisguise(DisguiseType disguiseType) {
@@ -70,8 +71,7 @@ public class MobDisguise extends TargetedDisguise {
         if (getWatcher() != null) {
             if (getWatcher() instanceof AgeableWatcher) {
                 return ((AgeableWatcher) getWatcher()).isAdult();
-            }
-            else if (getWatcher() instanceof ZombieWatcher) {
+            } else if (getWatcher() instanceof ZombieWatcher) {
                 return ((ZombieWatcher) getWatcher()).isAdult();
             }
             return true;

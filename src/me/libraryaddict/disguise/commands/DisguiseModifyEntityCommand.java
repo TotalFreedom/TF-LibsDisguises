@@ -20,6 +20,7 @@ import me.libraryaddict.disguise.utilities.ReflectionFlagWatchers;
 import me.libraryaddict.disguise.utilities.ReflectionFlagWatchers.ParamInfo;
 
 public class DisguiseModifyEntityCommand extends DisguiseBaseCommand implements TabCompleter {
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -56,8 +57,9 @@ public class DisguiseModifyEntityCommand extends DisguiseBaseCommand implements 
 
         HashMap<DisguisePerm, HashMap<ArrayList<String>, Boolean>> perms = getPermissions(sender);
 
-        if (perms.isEmpty())
+        if (perms.isEmpty()) {
             return tabs;
+        }
 
         for (DisguisePerm perm : perms.keySet()) {
             boolean addMethods = true;
@@ -68,15 +70,15 @@ public class DisguiseModifyEntityCommand extends DisguiseBaseCommand implements 
                 ParamInfo info = ReflectionFlagWatchers.getParamInfo(perm.getType(), prevArg);
 
                 if (info != null) {
-                    if (info.getParamClass() != boolean.class)
+                    if (info.getParamClass() != boolean.class) {
                         addMethods = false;
+                    }
 
                     if (info.isEnums()) {
                         for (String e : info.getEnums(origArgs[origArgs.length - 1])) {
                             tabs.add(e);
                         }
-                    }
-                    else {
+                    } else {
                         if (info.getParamClass() == String.class) {
                             for (Player player : Bukkit.getOnlinePlayers()) {
                                 tabs.add(player.getName());

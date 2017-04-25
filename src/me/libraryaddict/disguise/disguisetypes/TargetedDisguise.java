@@ -28,6 +28,7 @@ public abstract class TargetedDisguise extends Disguise {
     }
 
     public enum TargetType {
+
         HIDE_DISGUISE_TO_EVERYONE_BUT_THESE_PLAYERS, SHOW_TO_EVERYONE_BUT_THESE_PLAYERS
     }
 
@@ -59,13 +60,12 @@ public abstract class TargetedDisguise extends Disguise {
                                     canSee(player) ? PlayerInfoAction.REMOVE_PLAYER : PlayerInfoAction.ADD_PLAYER);
                             deleteTab.getPlayerInfoDataLists().write(0,
                                     Arrays.asList(new PlayerInfoData(ReflectionManager.getGameProfile((Player) getEntity()), 0,
-                                            NativeGameMode.SURVIVAL,
-                                            WrappedChatComponent.fromText(((Player) getEntity()).getDisplayName()))));
+                                                    NativeGameMode.SURVIVAL,
+                                                    WrappedChatComponent.fromText(((Player) getEntity()).getDisplayName()))));
 
                             ProtocolLibrary.getProtocolManager().sendServerPacket(player, deleteTab);
                         }
-                    }
-                    catch (InvocationTargetException e) {
+                    } catch (InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }
@@ -122,13 +122,12 @@ public abstract class TargetedDisguise extends Disguise {
                                     canSee(player) ? PlayerInfoAction.ADD_PLAYER : PlayerInfoAction.REMOVE_PLAYER);
                             deleteTab.getPlayerInfoDataLists().write(0,
                                     Arrays.asList(new PlayerInfoData(ReflectionManager.getGameProfile((Player) getEntity()), 0,
-                                            NativeGameMode.SURVIVAL,
-                                            WrappedChatComponent.fromText(((Player) getEntity()).getDisplayName()))));
+                                                    NativeGameMode.SURVIVAL,
+                                                    WrappedChatComponent.fromText(((Player) getEntity()).getDisplayName()))));
 
                             ProtocolLibrary.getProtocolManager().sendServerPacket(player, deleteTab);
                         }
-                    }
-                    catch (InvocationTargetException e) {
+                    } catch (InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }

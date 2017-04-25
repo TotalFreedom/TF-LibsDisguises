@@ -62,6 +62,7 @@ import me.libraryaddict.disguise.utilities.PacketsManager;
 import me.libraryaddict.disguise.utilities.ReflectionManager;
 
 public class LibsDisguises extends JavaPlugin {
+
     private static LibsDisguises instance;
     private DisguiseListener listener;
 
@@ -69,8 +70,7 @@ public class LibsDisguises extends JavaPlugin {
     public void onEnable() {
         try {
             Class.forName("com.comphenix.protocol.wrappers.Vector3F").getName();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.err.println("[LibsDisguises] Lib's Disguises failed to startup, outdated ProtocolLib!");
             System.err.println(
                     "[LibsDisguises] You need to update ProtocolLib, please try this build http://ci.dmulloy2.net/job/ProtocolLib/lastStableBuild/artifact/modules/ProtocolLib/target/ProtocolLib.jar");
@@ -79,8 +79,7 @@ public class LibsDisguises extends JavaPlugin {
 
         try {
             ReflectionManager.getNmsClass("EntityEvoker").getName();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.err.println("[LibsDisguises] Lib's Disguises failed to startup, outdated server!");
             System.err.println("[LibsDisguises] This plugin does not offer backwards support!");
             return;
@@ -109,9 +108,7 @@ public class LibsDisguises extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(listener, this);
 
         registerCommand("disguise", new DisguiseCommand());
-        registerCommand("undisguise", new UndisguiseCommand());
-        registerCommand("disguiseplayer", new DisguisePlayerCommand());
-        registerCommand("undisguiseplayer", new UndisguisePlayerCommand());
+        registerCommand("undisguise", new UndisguiseCommand());;
         registerCommand("undisguiseentity", new UndisguiseEntityCommand());
         registerCommand("disguiseentity", new DisguiseEntityCommand());
         registerCommand("disguiseradius", new DisguiseRadiusCommand(getConfig().getInt("DisguiseRadiusMax")));
@@ -129,8 +126,7 @@ public class LibsDisguises extends JavaPlugin {
         try {
             Metrics metrics = new Metrics(this);
             metrics.start();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
         }
     }
 
@@ -155,8 +151,9 @@ public class LibsDisguises extends JavaPlugin {
     }
 
     /**
-     * Here we create a nms entity for each disguise. Then grab their default values in their datawatcher. Then their sound volume
-     * for mob noises. As well as setting their watcher class and entity size.
+     * Here we create a nms entity for each disguise. Then grab their default
+     * values in their datawatcher. Then their sound volume for mob noises. As
+     * well as setting their watcher class and entity size.
      */
     private void registerValues() {
         for (DisguiseType disguiseType : DisguiseType.values()) {
@@ -206,8 +203,7 @@ public class LibsDisguises extends JavaPlugin {
                                 disguiseType.name()) + "Watcher");
                         break;
                 }
-            }
-            catch (ClassNotFoundException ex) {
+            } catch (ClassNotFoundException ex) {
                 // There is no explicit watcher for this entity.
                 Class entityClass = disguiseType.getEntityType().getEntityClass();
 
@@ -343,7 +339,7 @@ public class LibsDisguises extends JavaPlugin {
 
                     if (ReflectionManager.convertInvalidItem(
                             flagType.getDefault()).getClass() != ReflectionManager.convertInvalidItem(
-                            watch.getValue()).getClass()) {
+                                    watch.getValue()).getClass()) {
                         System.err.println(
                                 "Mismatch of FlagType's for " + disguiseType.name() + "! Index " + watch.getIndex() + " has the wrong classtype!");
                         System.err.println(
@@ -377,8 +373,7 @@ public class LibsDisguises extends JavaPlugin {
                 }
 
                 disguiseValues.setEntitySize(ReflectionManager.getSize(bukkitEntity));
-            }
-            catch (SecurityException | IllegalArgumentException | IllegalAccessException | FieldAccessException ex) {
+            } catch (SecurityException | IllegalArgumentException | IllegalAccessException | FieldAccessException ex) {
                 System.out.print(
                         "[LibsDisguises] Uh oh! Trouble while making values for the disguise " + disguiseType.name() + "!");
                 System.out.print(
@@ -406,7 +401,8 @@ public class LibsDisguises extends JavaPlugin {
     }
 
     /**
-     * External APIs shouldn't actually need this instance. DisguiseAPI should be enough to handle most cases.
+     * External APIs shouldn't actually need this instance. DisguiseAPI should
+     * be enough to handle most cases.
      *
      * @return The instance of this plugin
      */

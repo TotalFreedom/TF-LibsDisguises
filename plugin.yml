@@ -21,9 +21,6 @@ commands:
       aliases: [dhelp, dishelp]
       permission: libsdisguises.seecmd.disguisehelp
       description: Help command for LibsDisguises.
-    disguiseplayer:
-      aliases: [dplayer, displayer]
-      permission: libsdisguises.seecmd.disguiseplayer
       description: Disguise another player as an entity.
     disguiseradius:
       aliases: [disradius, dradius]
@@ -37,10 +34,6 @@ commands:
       aliases: [undisentity, undentity]
       permission: libsdisguises.seecmd.undisguiseentity
       description: Undisguise an entity.
-    undisguiseplayer:
-      aliases: [undisplayer, undplayer]
-      permission: libsdisguises.seecmd.undisguiseplayer
-      description: Undisguise a player.
     undisguiseradius:
       aliases: [undisradius, undradius]
       permission: libsdisguises.seecmd.undisguiseradius

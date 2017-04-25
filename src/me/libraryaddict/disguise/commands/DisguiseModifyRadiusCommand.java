@@ -30,6 +30,7 @@ import me.libraryaddict.disguise.utilities.ReflectionFlagWatchers;
 import me.libraryaddict.disguise.utilities.ReflectionFlagWatchers.ParamInfo;
 
 public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements TabCompleter {
+
     private int maxRadius = 30;
     private ArrayList<Class<? extends Entity>> validClasses = new ArrayList<>();
 
@@ -47,8 +48,7 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
 
         if (sender instanceof Player) {
             center = ((Player) sender).getLocation();
-        }
-        else {
+        } else {
             center = ((CraftBlockCommandSender) sender).getBlock().getLocation().add(0.5, 0, 0.5);
         }
 
@@ -104,8 +104,7 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
             if (starting == 0) {
                 try {
                     type = EntityType.valueOf(args[0].toUpperCase());
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                 }
 
                 if (type == null) {
@@ -119,8 +118,7 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
             sender.sendMessage(ChatColor.RED + "You need to supply the disguise options as well as the radius"
                     + (starting != 0 ? " and EntityType" : ""));
             return true;
-        }
-        else if (args.length < 2) {
+        } else if (args.length < 2) {
             sender.sendMessage(ChatColor.RED + "You need to supply a radius as well as the disguise options");
             return true;
         }
@@ -160,10 +158,11 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
 
             Disguise disguise;
 
-            if (sender instanceof Player)
+            if (sender instanceof Player) {
                 disguise = DisguiseAPI.getDisguise((Player) sender, entity);
-            else
+            } else {
                 disguise = DisguiseAPI.getDisguise(entity);
+            }
 
             if (!map.containsKey(new DisguisePerm(disguise.getType()))) {
                 noPermission++;
@@ -174,15 +173,13 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
                 DisguiseParser.callMethods(sender, disguise, map.get(new DisguisePerm(disguise.getType())),
                         new ArrayList<String>(), newArgs);
                 modifiedDisguises++;
-            }
-            catch (DisguiseParseException ex) {
+            } catch (DisguiseParseException ex) {
                 if (ex.getMessage() != null) {
                     sender.sendMessage(ex.getMessage());
                 }
 
                 return true;
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
                 return true;
             }
@@ -194,8 +191,7 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
 
         if (modifiedDisguises > 0) {
             sender.sendMessage(ChatColor.RED + "Successfully modified the disguises of " + modifiedDisguises + " entities!");
-        }
-        else {
+        } else {
             sender.sendMessage(ChatColor.RED + "Couldn't find any disguised entities!");
         }
 
@@ -221,16 +217,18 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
 
         if (!isNumeric(args[0])) {
             for (Class c : validClasses) {
-                if (!c.getSimpleName().equalsIgnoreCase(args[0]))
+                if (!c.getSimpleName().equalsIgnoreCase(args[0])) {
                     continue;
+                }
 
                 starting = 2;
                 break;
             }
 
             // Not a valid radius
-            if (starting == 1 || args.length == 1 || !isNumeric(args[1]))
+            if (starting == 1 || args.length == 1 || !isNumeric(args[1])) {
                 return filterTabs(tabs, origArgs);
+            }
         }
 
         int radius = Integer.parseInt(args[starting]);
@@ -245,8 +243,9 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
         for (Entity entity : getNearbyEntities(sender, radius)) {
             Disguise disguise = DisguiseAPI.getDisguise(entity);
 
-            if (disguise == null)
+            if (disguise == null) {
                 continue;
+            }
 
             DisguiseType disguiseType = disguise.getType();
 
@@ -254,8 +253,9 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
                 for (int i = 0; i < args.length; i++) {
                     String arg = args[i];
 
-                    if (!method.getName().equalsIgnoreCase(arg))
+                    if (!method.getName().equalsIgnoreCase(arg)) {
                         continue;
+                    }
 
                     usedOptions.add(arg);
                 }
@@ -270,15 +270,15 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
                     ParamInfo info = ReflectionFlagWatchers.getParamInfo(disguiseType, prevArg);
 
                     if (info != null) {
-                        if (info.getParamClass() != boolean.class)
+                        if (info.getParamClass() != boolean.class) {
                             addMethods = false;
+                        }
 
                         if (info.isEnums()) {
                             for (String e : info.getEnums(origArgs[origArgs.length - 1])) {
                                 tabs.add(e);
                             }
-                        }
-                        else {
+                        } else {
                             if (info.getParamClass() == String.class) {
                                 for (Player player : Bukkit.getOnlinePlayers()) {
                                     tabs.add(player.getName());
@@ -324,7 +324,7 @@ public class DisguiseModifyRadiusCommand extends DisguiseBaseCommand implements 
         if (allowedDisguises.contains("dropped_item") || allowedDisguises.contains("falling_block")) {
             sender.sendMessage((ChatColor.DARK_GREEN + "/disguiseradius <EntityType" + optional
                     + "> <Radius> <Dropped_Item/Falling_Block> <Id> <Durability" + optional + ">")
-                            .replace("<", "<" + ChatColor.GREEN).replace(">", ChatColor.DARK_GREEN + ">"));
+                    .replace("<", "<" + ChatColor.GREEN).replace(">", ChatColor.DARK_GREEN + ">"));
         }
 
         sender.sendMessage(

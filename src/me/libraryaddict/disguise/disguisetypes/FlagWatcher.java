@@ -27,6 +27,7 @@ import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 import me.libraryaddict.disguise.utilities.ReflectionManager;
 
 public class FlagWatcher {
+
     private boolean addEntityAnimations = DisguiseConfig.isEntityAnimationsAdded();
     /**
      * These are the entity values I need to add else it could crash them..
@@ -60,8 +61,7 @@ public class FlagWatcher {
 
         try {
             cloned = getClass().getConstructor(Disguise.class).newInstance(getDisguise());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             cloned = new FlagWatcher(getDisguise());
         }
@@ -97,8 +97,7 @@ public class FlagWatcher {
                 }
 
                 value = entityValues.get(id);
-            }
-            else if (backupEntityValues.containsKey(id)) {
+            } else if (backupEntityValues.containsKey(id)) {
                 if (backupEntityValues.get(id) == null) {
                     continue;
                 }
@@ -115,20 +114,21 @@ public class FlagWatcher {
 
                 watch = ReflectionManager.createWatchable(id, value);
 
-                if (watch == null)
+                if (watch == null) {
                     continue;
+                }
 
                 if (!isDirty) {
                     watch.setDirtyState(false);
                 }
-            }
-            else {
+            } else {
                 boolean isDirty = watch.getDirtyState();
 
                 watch = ReflectionManager.createWatchable(id, watch.getValue());
 
-                if (watch == null)
+                if (watch == null) {
                     continue;
+                }
 
                 if (!isDirty) {
                     watch.setDirtyState(false);
@@ -153,8 +153,9 @@ public class FlagWatcher {
 
                 WrappedWatchableObject watch = ReflectionManager.createWatchable(id, value);
 
-                if (watch == null)
+                if (watch == null) {
                     continue;
+                }
 
                 newList.add(watch);
             }
@@ -178,14 +179,12 @@ public class FlagWatcher {
                                 public void run() {
                                     try {
                                         DisguiseUtilities.sendSelfDisguise((Player) getDisguise().getEntity(), disguise);
-                                    }
-                                    catch (Exception ex) {
+                                    } catch (Exception ex) {
                                         ex.printStackTrace();
                                     }
                                 }
                             }, 2);
-                        }
-                        else if (newHealth <= 0 && !hasDied) {
+                        } else if (newHealth <= 0 && !hasDied) {
                             hasDied = true;
                         }
                     }
@@ -300,16 +299,15 @@ public class FlagWatcher {
 
             if (entityValues.containsKey(i) && entityValues.get(i) != null) {
                 watchable = ReflectionManager.createWatchable(i, entityValues.get(i));
-            }
-            else if (backupEntityValues.containsKey(i) && backupEntityValues.get(i) != null) {
+            } else if (backupEntityValues.containsKey(i) && backupEntityValues.get(i) != null) {
                 watchable = ReflectionManager.createWatchable(i, backupEntityValues.get(i));
-            }
-            else {
+            } else {
                 continue;
             }
 
-            if (watchable == null)
+            if (watchable == null) {
                 continue;
+            }
 
             watchableObjects.add(watchable);
         }
@@ -335,8 +333,9 @@ public class FlagWatcher {
 
             WrappedWatchableObject watch = ReflectionManager.createWatchable(data.getIndex(), value);
 
-            if (watch == null)
+            if (watch == null) {
                 continue;
+            }
 
             list.add(watch);
         }
@@ -356,12 +355,10 @@ public class FlagWatcher {
                         temp.getIntegers().write(0, DisguiseAPI.getSelfDisguiseId());
 
                         ProtocolLibrary.getProtocolManager().sendServerPacket(player, temp);
-                    }
-                    else {
+                    } else {
                         ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
                     }
-                }
-                catch (InvocationTargetException e) {
+                } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
             }
@@ -407,8 +404,7 @@ public class FlagWatcher {
 
         if (flag) {
             setData(MetaIndex.ENTITY_META, (byte) (b0 | 1 << byteValue));
-        }
-        else {
+        } else {
             setData(MetaIndex.ENTITY_META, (byte) (b0 & ~(1 << byteValue)));
         }
     }
@@ -454,33 +450,34 @@ public class FlagWatcher {
 
     protected void sendItemStack(EquipmentSlot slot, ItemStack itemStack) {
         if (!DisguiseAPI.isDisguiseInUse(getDisguise()) || getDisguise().getWatcher() != this
-                || getDisguise().getEntity() == null)
+                || getDisguise().getEntity() == null) {
             return;
+        }
 
         if (itemStack == null && getDisguise().getEntity() instanceof LivingEntity) {
             EntityEquipment equip = ((LivingEntity) getDisguise().getEntity()).getEquipment();
 
             switch (slot) {
-            case HAND:
-                itemStack = equip.getItemInMainHand();
-                break;
-            case OFF_HAND:
-                itemStack = equip.getItemInOffHand();
-                break;
-            case HEAD:
-                itemStack = equip.getHelmet();
-                break;
-            case CHEST:
-                itemStack = equip.getChestplate();
-                break;
-            case LEGS:
-                itemStack = equip.getLeggings();
-                break;
-            case FEET:
-                itemStack = equip.getBoots();
-                break;
-            default:
-                break;
+                case HAND:
+                    itemStack = equip.getItemInMainHand();
+                    break;
+                case OFF_HAND:
+                    itemStack = equip.getItemInOffHand();
+                    break;
+                case HEAD:
+                    itemStack = equip.getHelmet();
+                    break;
+                case CHEST:
+                    itemStack = equip.getChestplate();
+                    break;
+                case LEGS:
+                    itemStack = equip.getLeggings();
+                    break;
+                case FEET:
+                    itemStack = equip.getBoots();
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -498,8 +495,7 @@ public class FlagWatcher {
 
             try {
                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
-            }
-            catch (InvocationTargetException e) {
+            } catch (InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
@@ -526,8 +522,9 @@ public class FlagWatcher {
     }
 
     protected <Y> void setData(MetaIndex<Y> id, Y value) {
-        if (value == null && id.getDefault() instanceof ItemStack)
+        if (value == null && id.getDefault() instanceof ItemStack) {
             throw new IllegalArgumentException("Cannot use null ItemStacks");
+        }
 
         entityValues.put(id.getIndex(), value);
 

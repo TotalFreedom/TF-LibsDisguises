@@ -18,19 +18,22 @@ import me.libraryaddict.disguise.LibsDisguises;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
 
 public class PacketListenerTabList extends PacketAdapter {
+
     public PacketListenerTabList(LibsDisguises plugin) {
         super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO);
     }
 
     @Override
     public void onPacketSending(final PacketEvent event) {
-        if (event.isCancelled())
+        if (event.isCancelled()) {
             return;
+        }
 
         Player observer = event.getPlayer();
 
-        if (event.getPacket().getPlayerInfoAction().read(0) != PlayerInfoAction.ADD_PLAYER)
+        if (event.getPacket().getPlayerInfoAction().read(0) != PlayerInfoAction.ADD_PLAYER) {
             return;
+        }
 
         List<PlayerInfoData> list = event.getPacket().getPlayerInfoDataLists().read(0);
         Iterator<PlayerInfoData> itel = list.iterator();
@@ -40,24 +43,26 @@ public class PacketListenerTabList extends PacketAdapter {
 
             Player player = Bukkit.getPlayer(data.getProfile().getUUID());
 
-            if (player == null)
+            if (player == null) {
                 continue;
+            }
 
             Disguise disguise = DisguiseAPI.getDisguise(observer, player);
 
-            if (disguise == null)
+            if (disguise == null) {
                 continue;
+            }
 
-            if (!disguise.isHidePlayer())
+            if (!disguise.isHidePlayer()) {
                 continue;
+            }
 
             itel.remove();
         }
 
         if (list.isEmpty()) {
             event.setCancelled(true);
-        }
-        else {
+        } else {
             event.getPacket().getPlayerInfoDataLists().write(0, list);
         }
     }

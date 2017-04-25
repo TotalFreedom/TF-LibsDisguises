@@ -25,6 +25,7 @@ import me.libraryaddict.disguise.utilities.LibsProfileLookup;
 import me.libraryaddict.disguise.utilities.ReflectionManager;
 
 public class PlayerDisguise extends TargetedDisguise {
+
     private LibsProfileLookup currentLookup;
     private WrappedGameProfile gameProfile;
     private String playerName;
@@ -237,15 +238,17 @@ public class PlayerDisguise extends TargetedDisguise {
 
     @Override
     public boolean startDisguise() {
-        if (isDisguiseInUse() || skinToUse == null)
+        if (isDisguiseInUse() || skinToUse == null) {
             return super.startDisguise();
+        }
 
         if (getGameProfile() == null) {
             currentLookup = new LibsProfileLookup() {
                 @Override
                 public void onLookup(WrappedGameProfile gameProfile) {
-                    if (currentLookup != this || gameProfile == null)
+                    if (currentLookup != this || gameProfile == null) {
                         return;
+                    }
 
                     setSkin(gameProfile);
 
@@ -268,8 +271,7 @@ public class PlayerDisguise extends TargetedDisguise {
         if (newSkin != null && newSkin.length() > 50) {
             try {
                 return setSkin(ReflectionManager.parseGameProfile(newSkin));
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new IllegalArgumentException(
                         "The skin is too long to be a playername, but cannot be parsed to a GameProfile!");
             }
@@ -322,14 +324,14 @@ public class PlayerDisguise extends TargetedDisguise {
 
                 try {
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (!canSee(player))
+                        if (!canSee(player)) {
                             continue;
+                        }
 
                         ProtocolLibrary.getProtocolManager().sendServerPacket(player, deleteTab);
                         ProtocolLibrary.getProtocolManager().sendServerPacket(player, addTab);
                     }
-                }
-                catch (InvocationTargetException e) {
+                } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
             }

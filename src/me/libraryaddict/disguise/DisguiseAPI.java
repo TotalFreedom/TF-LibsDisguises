@@ -34,6 +34,7 @@ import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 import me.libraryaddict.disguise.utilities.ReflectionManager;
 
 public class DisguiseAPI {
+
     public static Disguise constructDisguise(Entity entity) {
         return constructDisguise(entity, true, true, true);
     }
@@ -44,11 +45,9 @@ public class DisguiseAPI {
 
         if (disguiseType.isMisc()) {
             disguise = new MiscDisguise(disguiseType);
-        }
-        else if (disguiseType.isMob()) {
+        } else if (disguiseType.isMob()) {
             disguise = new MobDisguise(disguiseType);
-        }
-        else {
+        } else {
             disguise = new PlayerDisguise(entity.getName());
         }
 
@@ -60,8 +59,7 @@ public class DisguiseAPI {
 
                 if (effect.getType() == PotionEffectType.INVISIBILITY) {
                     watcher.setInvisible(true);
-                }
-                else if (effect.getType() == PotionEffectType.GLOWING) {
+                } else if (effect.getType() == PotionEffectType.GLOWING) {
                     watcher.setGlowing(true);
                 }
             }
@@ -86,8 +84,9 @@ public class DisguiseAPI {
                     ((AbstractHorseWatcher) watcher).setSaddled(true);
                 }
 
-                if (watcher instanceof HorseWatcher)
+                if (watcher instanceof HorseWatcher) {
                     ((HorseWatcher) watcher).setHorseArmor(horseInventory.getArmor());
+                }
             }
         }
         for (Method method : entity.getClass().getMethods()) {
@@ -113,8 +112,7 @@ public class DisguiseAPI {
 
                                 if (methodParam == float.class || methodParam == Float.class || methodParam == Double.class) {
                                     methodParam = double.class;
-                                }
-                                else if (methodParam == AnimalColor.class) {
+                                } else if (methodParam == AnimalColor.class) {
                                     methodParam = DyeColor.class;
                                 }
                                 if (methodReturn == methodParam) {
@@ -128,14 +126,12 @@ public class DisguiseAPI {
                                                         double d = (Double) value;
                                                         value = (float) d;
                                                     }
-                                                }
-                                                else if (toCast == double.class) {
+                                                } else if (toCast == double.class) {
                                                     if (!(value instanceof Double)) {
                                                         float d = (Float) value;
                                                         value = (double) d;
                                                     }
-                                                }
-                                                else if (toCast == AnimalColor.class) {
+                                                } else if (toCast == AnimalColor.class) {
                                                     value = AnimalColor.valueOf(((DyeColor) value).name());
                                                 }
                                             }
@@ -145,8 +141,7 @@ public class DisguiseAPI {
                                             }
                                         }
                                         watcherMethod.invoke(watcher, value);
-                                    }
-                                    catch (Exception ex) {
+                                    } catch (Exception ex) {
                                         ex.printStackTrace();
                                     }
                                 }
@@ -195,13 +190,20 @@ public class DisguiseAPI {
         for (Object obj : playersToNotSeeDisguise) {
             if (obj instanceof String) {
                 ((TargetedDisguise) disguise).addPlayer((String) obj);
-            }
-            else if (obj instanceof Player) {
+            } else if (obj instanceof Player) {
                 ((TargetedDisguise) disguise).addPlayer(((Player) obj).getName());
             }
         }
 
         disguiseEntity(entity, disguise);
+    }
+
+    public static void disableDisguises() {
+        DisallowedDisguises.disabled = true;
+    }
+
+    public static void enableDisguises() {
+        DisallowedDisguises.disabled = false;
     }
 
     @Deprecated
@@ -218,7 +220,8 @@ public class DisguiseAPI {
     }
 
     /**
-     * Disguise the next entity to spawn, this means you need to spawn an entity immediately after calling this.
+     * Disguise the next entity to spawn, this means you need to spawn an entity
+     * immediately after calling this.
      *
      * @param disguise
      * @return
@@ -237,8 +240,7 @@ public class DisguiseAPI {
             DisguiseUtilities.addFutureDisguise(id, (TargetedDisguise) disguise);
 
             return id;
-        }
-        catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -275,8 +277,7 @@ public class DisguiseAPI {
         for (Object obj : playersToViewDisguise) {
             if (obj instanceof String) {
                 ((TargetedDisguise) disguise).addPlayer((String) obj);
-            }
-            else if (obj instanceof Player) {
+            } else if (obj instanceof Player) {
                 ((TargetedDisguise) disguise).addPlayer(((Player) obj).getName());
             }
         }
@@ -395,8 +396,8 @@ public class DisguiseAPI {
     }
 
     /**
-     * Undisguise the entity. This doesn't let you cancel the UndisguiseEvent if the entity is no longer valid. Aka removed from
-     * the world.
+     * Undisguise the entity. This doesn't let you cancel the UndisguiseEvent if
+     * the entity is no longer valid. Aka removed from the world.
      *
      * @param entity
      */
@@ -424,8 +425,7 @@ public class DisguiseAPI {
             if (!Disguise.getViewSelf().contains(entity.getUniqueId())) {
                 Disguise.getViewSelf().add(entity.getUniqueId());
             }
-        }
-        else {
+        } else {
             Disguise.getViewSelf().remove(entity.getUniqueId());
         }
     }

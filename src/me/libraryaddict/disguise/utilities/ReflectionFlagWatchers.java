@@ -30,7 +30,9 @@ import me.libraryaddict.disguise.disguisetypes.FlagWatcher;
 import me.libraryaddict.disguise.utilities.DisguiseParser.DisguisePerm;
 
 public class ReflectionFlagWatchers {
+
     public static class ParamInfo {
+
         private Class paramClass;
         private String name;
         private String[] enums;
@@ -100,8 +102,9 @@ public class ReflectionFlagWatchers {
 
     public static ParamInfo getParamInfo(Class c) {
         for (ParamInfo info : getParamInfos()) {
-            if (info.getParamClass() != c)
+            if (info.getParamClass() != c) {
                 continue;
+            }
 
             return info;
         }
@@ -115,14 +118,17 @@ public class ReflectionFlagWatchers {
 
     public static ParamInfo getParamInfo(DisguiseType disguiseType, String methodName) {
         for (Method method : getDisguiseWatcherMethods(disguiseType.getWatcherClass())) {
-            if (!method.getName().toLowerCase().equals(methodName.toLowerCase()))
+            if (!method.getName().toLowerCase().equals(methodName.toLowerCase())) {
                 continue;
+            }
 
-            if (method.getParameterTypes().length != 1)
+            if (method.getParameterTypes().length != 1) {
                 continue;
+            }
 
-            if (method.getAnnotation(Deprecated.class) != null)
+            if (method.getAnnotation(Deprecated.class) != null) {
                 continue;
+            }
 
             return getParamInfo(method.getParameterTypes()[0]);
         }
@@ -146,8 +152,9 @@ public class ReflectionFlagWatchers {
         ArrayList<String> potionEnums = new ArrayList<String>();
 
         for (PotionEffectType effectType : PotionEffectType.values()) {
-            if (effectType == null)
+            if (effectType == null) {
                 continue;
+            }
 
             potionEnums.add(toReadable(effectType.getName()));
         }
@@ -161,30 +168,31 @@ public class ReflectionFlagWatchers {
 
         paramList.add(new ParamInfo(ItemStack[].class, "Four ItemStacks (id:damage,id:damage..)",
                 "Four ItemStacks seperated by an ,", materials) {
-            @Override
-            public String[] getEnums(String tabComplete) {
-                String beginning = tabComplete.substring(0, tabComplete.contains(",") ? tabComplete.lastIndexOf(",") + 1 : 0);
-                String end = tabComplete.substring(tabComplete.contains(",") ? tabComplete.lastIndexOf(",") + 1 : 0);
+                    @Override
+                    public String[] getEnums(String tabComplete) {
+                        String beginning = tabComplete.substring(0, tabComplete.contains(",") ? tabComplete.lastIndexOf(",") + 1 : 0);
+                        String end = tabComplete.substring(tabComplete.contains(",") ? tabComplete.lastIndexOf(",") + 1 : 0);
 
-                ArrayList<String> toReturn = new ArrayList<String>();
+                        ArrayList<String> toReturn = new ArrayList<String>();
 
-                for (String material : super.getEnums("")) {
-                    if (!material.toLowerCase().startsWith(end.toLowerCase()))
-                        continue;
+                        for (String material : super.getEnums("")) {
+                            if (!material.toLowerCase().startsWith(end.toLowerCase())) {
+                                continue;
+                            }
 
-                    toReturn.add(beginning + material);
-                }
+                            toReturn.add(beginning + material);
+                        }
 
-                return toReturn.toArray(new String[0]);
-            }
+                        return toReturn.toArray(new String[0]);
+                    }
 
-        });
+                });
 
         paramList.add(new ParamInfo(PotionEffectType.class, "Potion Effect", "View all the potion effects you can add",
                 potionEnums.toArray(new String[0])));
         paramList.add(new ParamInfo(String.class, "Text", "A line of text"));
-        paramList.add(new ParamInfo(boolean.class, "True/False", "True or False", new String[] {
-                "true", "false"
+        paramList.add(new ParamInfo(boolean.class, "True/False", "True or False", new String[]{
+            "true", "false"
         }));
         paramList.add(new ParamInfo(int.class, "Number", "A whole number, no decimcals"));
         paramList.add(new ParamInfo(double.class, "Number", "A number which can have decimals"));
@@ -213,31 +221,25 @@ public class ReflectionFlagWatchers {
 
             if (method.getParameterTypes().length != 1) {
                 itel.remove();
-            }
-            else if (method.getName().startsWith("get")) {
+            } else if (method.getName().startsWith("get")) {
                 itel.remove();
-            }
-            else if (method.getAnnotation(Deprecated.class) != null) {
+            } else if (method.getAnnotation(Deprecated.class) != null) {
                 itel.remove();
-            }
-            else if (getParamInfo(method.getParameterTypes()[0]) == null) {
+            } else if (getParamInfo(method.getParameterTypes()[0]) == null) {
                 itel.remove();
-            }
-            else if (!method.getReturnType().equals(Void.TYPE)) {
+            } else if (!method.getReturnType().equals(Void.TYPE)) {
                 itel.remove();
-            }
-            else if (method.getName().equals("removePotionEffect")) {
+            } else if (method.getName().equals("removePotionEffect")) {
                 itel.remove();
             }
         }
 
-        for (String methodName : new String[] {
-                "setViewSelfDisguise", "setHideHeldItemFromSelf", "setHideArmorFromSelf", "setHearSelfDisguise", "setHidePlayer"
+        for (String methodName : new String[]{
+            "setViewSelfDisguise", "setHideHeldItemFromSelf", "setHideArmorFromSelf", "setHearSelfDisguise", "setHidePlayer"
         }) {
             try {
                 methods.add(Disguise.class.getMethod(methodName, boolean.class));
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }

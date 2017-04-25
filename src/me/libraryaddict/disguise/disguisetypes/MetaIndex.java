@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class MetaIndex<Y> {
+
     private static MetaIndex[] _values = new MetaIndex[0];
 
     public static MetaIndex<Boolean> AGEABLE_BABY = new MetaIndex<>(AgeableWatcher.class, 0, false);
@@ -262,8 +263,9 @@ public class MetaIndex<Y> {
 
     static {
         for (MetaIndex flagType : values()) {
-            if (flagType.getFlagWatcher() == FlagWatcher.class)
+            if (flagType.getFlagWatcher() == FlagWatcher.class) {
                 continue;
+            }
 
             flagType._index += getNoIndexes(flagType.getFlagWatcher().getSuperclass());
         }
@@ -271,12 +273,12 @@ public class MetaIndex<Y> {
         // Simple verification for the dev that he's setting up the FlagType's properly.
         // All flag types should be from 0 to <Max Number> with no empty numbers.
         // All flag types should never occur twice.
-
         HashMap<Class, Integer> maxValues = new HashMap<>();
 
         for (MetaIndex type : values()) {
-            if (maxValues.containsKey(type.getFlagWatcher()) && maxValues.get(type.getFlagWatcher()) > type.getIndex())
+            if (maxValues.containsKey(type.getFlagWatcher()) && maxValues.get(type.getFlagWatcher()) > type.getIndex()) {
                 continue;
+            }
 
             maxValues.put(type.getFlagWatcher(), type.getIndex());
         }
@@ -288,11 +290,13 @@ public class MetaIndex<Y> {
                 MetaIndex found = null;
 
                 for (MetaIndex type : values()) {
-                    if (type.getIndex() != i)
+                    if (type.getIndex() != i) {
                         continue;
+                    }
 
-                    if (!type.getFlagWatcher().isAssignableFrom(entry.getKey()))
+                    if (!type.getFlagWatcher().isAssignableFrom(entry.getKey())) {
                         continue;
+                    }
 
                     if (found != null) {
                         System.err.println(
@@ -303,8 +307,9 @@ public class MetaIndex<Y> {
                     found = type;
                 }
 
-                if (found != null)
+                if (found != null) {
                     continue;
+                }
 
                 System.err.println(entry.getKey().getSimpleName() + " has no FlagType registered for the index " + i);
             }
@@ -316,16 +321,16 @@ public class MetaIndex<Y> {
 
         try {
             for (Field field : MetaIndex.class.getFields()) {
-                if (field.getType() != MetaIndex.class)
+                if (field.getType() != MetaIndex.class) {
                     continue;
+                }
 
                 MetaIndex index = (MetaIndex) field.get(null);
 
                 toPrint.add(
                         index.getFlagWatcher().getSimpleName() + " " + field.getName() + " " + index.getIndex() + " " + index.getDefault().getClass().getSimpleName());
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -338,11 +343,13 @@ public class MetaIndex<Y> {
 
     public static MetaIndex getFlag(Class<? extends FlagWatcher> watcherClass, int flagNo) {
         for (MetaIndex type : values()) {
-            if (type.getIndex() != flagNo)
+            if (type.getIndex() != flagNo) {
                 continue;
+            }
 
-            if (!type.getFlagWatcher().isAssignableFrom(watcherClass))
+            if (!type.getFlagWatcher().isAssignableFrom(watcherClass)) {
                 continue;
+            }
 
             return type;
         }
@@ -354,8 +361,9 @@ public class MetaIndex<Y> {
         ArrayList<MetaIndex> list = new ArrayList<>();
 
         for (MetaIndex type : values()) {
-            if (!type.getFlagWatcher().isAssignableFrom(watcherClass))
+            if (!type.getFlagWatcher().isAssignableFrom(watcherClass)) {
                 continue;
+            }
 
             list.add(type);
         }
@@ -367,8 +375,9 @@ public class MetaIndex<Y> {
         int found = 0;
 
         for (MetaIndex type : values()) {
-            if (type.getFlagWatcher() != c)
+            if (type.getFlagWatcher() != c) {
                 continue;
+            }
 
             found++;
         }

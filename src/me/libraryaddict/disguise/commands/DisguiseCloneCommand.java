@@ -18,6 +18,7 @@ import me.libraryaddict.disguise.utilities.DisguiseParser.DisguisePerm;
 import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 
 public class DisguiseCloneCommand extends DisguiseBaseCommand implements TabCompleter {
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender.getName().equals("CONSOLE")) {
@@ -40,39 +41,33 @@ public class DisguiseCloneCommand extends DisguiseBaseCommand implements TabComp
                 if (StringUtils.startsWithIgnoreCase(option, "ignoreEquip")
                         || StringUtils.startsWithIgnoreCase(option, "ignoreEnquip")) {
                     doEquipment = false;
-                }
-                else if (option.equalsIgnoreCase("doSneakSprint")) {
+                } else if (option.equalsIgnoreCase("doSneakSprint")) {
                     doSneak = true;
                     doSprint = true;
-                }
-                else if (option.equalsIgnoreCase("doSneak")) {
+                } else if (option.equalsIgnoreCase("doSneak")) {
                     doSneak = true;
-                }
-                else if (option.equalsIgnoreCase("doSprint")) {
+                } else if (option.equalsIgnoreCase("doSprint")) {
                     doSprint = true;
-                }
-                else {
+                } else {
                     sender.sendMessage(ChatColor.DARK_RED + "Unknown option '" + option
                             + "' - Valid options are 'IgnoreEquipment' 'DoSneakSprint' 'DoSneak' 'DoSprint'");
                     return true;
                 }
             }
 
-            Boolean[] options = new Boolean[] {
-                    doEquipment, doSneak, doSprint
+            Boolean[] options = new Boolean[]{
+                doEquipment, doSneak, doSprint
             };
 
             if (player != null) {
                 DisguiseUtilities.createClonedDisguise((Player) sender, player, options);
-            }
-            else {
+            } else {
                 LibsDisguises.getInstance().getListener().setDisguiseClone(sender.getName(), options);
 
                 sender.sendMessage(ChatColor.RED + "Right click a entity in the next " + DisguiseConfig.getDisguiseCloneExpire()
                         + " seconds to grab the disguise reference!");
             }
-        }
-        else {
+        } else {
             sender.sendMessage(ChatColor.RED + "You are forbidden to use this command.");
         }
 

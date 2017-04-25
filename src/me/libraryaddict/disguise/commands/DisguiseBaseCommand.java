@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import me.libraryaddict.disguise.DisallowedDisguises;
 
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,8 +19,9 @@ import me.libraryaddict.disguise.utilities.DisguiseParser.DisguisePerm;
 public abstract class DisguiseBaseCommand implements CommandExecutor {
 
     protected ArrayList<String> filterTabs(ArrayList<String> list, String[] origArgs) {
-        if (origArgs.length == 0)
+        if (origArgs.length == 0) {
             return list;
+        }
 
         Iterator<String> itel = list.iterator();
         String label = origArgs[origArgs.length - 1].toLowerCase();
@@ -27,8 +29,9 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
         while (itel.hasNext()) {
             String name = itel.next();
 
-            if (name.toLowerCase().startsWith(label))
+            if (name.toLowerCase().startsWith(label)) {
                 continue;
+            }
 
             itel.remove();
         }
@@ -40,10 +43,12 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
         ArrayList<String> allowedDisguises = new ArrayList<>();
 
         for (DisguisePerm type : hashMap.keySet()) {
-            if (type.isUnknown())
+            if (type.isUnknown()) {
                 continue;
-
-            allowedDisguises.add(type.toReadable().replaceAll(" ", "_"));
+            }
+            if (DisallowedDisguises.isAllowed(type.getType()) && !type.isUnknown()) {
+                allowedDisguises.add(type.toReadable().replaceAll(" ", "_"));
+            }
         }
 
         Collections.sort(allowedDisguises, String.CASE_INSENSITIVE_ORDER);
@@ -57,8 +62,9 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
         for (int i = 0; i < args.length - 1; i++) {
             String s = args[i];
 
-            if (s.trim().isEmpty())
+            if (s.trim().isEmpty()) {
                 continue;
+            }
 
             newArgs.add(s);
         }
@@ -69,29 +75,21 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
     public final String getPermNode() {
         if (this instanceof DisguiseCommand) {
             return "disguise";
-        }
-        else if (this instanceof DisguiseEntityCommand) {
+        } else if (this instanceof DisguiseEntityCommand) {
             return "disguiseentity";
-        }
-        else if (this instanceof DisguisePlayerCommand) {
+        } else if (this instanceof DisguisePlayerCommand) {
             return "disguiseplayer";
-        }
-        else if (this instanceof DisguiseRadiusCommand) {
+        } else if (this instanceof DisguiseRadiusCommand) {
             return "disguiseradius";
-        }
-        else if (this instanceof DisguiseModifyCommand) {
+        } else if (this instanceof DisguiseModifyCommand) {
             return "disguisemodify";
-        }
-        else if (this instanceof DisguiseModifyEntityCommand) {
+        } else if (this instanceof DisguiseModifyEntityCommand) {
             return "disguisemodifyentity";
-        }
-        else if (this instanceof DisguiseModifyPlayerCommand) {
+        } else if (this instanceof DisguiseModifyPlayerCommand) {
             return "disguisemodifyplayer";
-        }
-        else if (this instanceof DisguiseModifyRadiusCommand) {
+        } else if (this instanceof DisguiseModifyRadiusCommand) {
             return "disguisemodifyradius";
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unknown disguise command, perm node not found");
         }
     }
@@ -104,8 +102,7 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
         try {
             Integer.parseInt(string);
             return true;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             return false;
         }
     }

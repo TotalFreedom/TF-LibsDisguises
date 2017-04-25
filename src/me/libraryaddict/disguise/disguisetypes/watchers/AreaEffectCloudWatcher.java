@@ -32,8 +32,9 @@ public class AreaEffectCloudWatcher extends FlagWatcher {
     }
 
     public void setRadius(float radius) {
-        if (radius > 30)
+        if (radius > 30) {
             radius = 30;
+        }
 
         setData(MetaIndex.AREA_EFFECT_RADIUS, radius);
         sendData(MetaIndex.AREA_EFFECT_RADIUS);

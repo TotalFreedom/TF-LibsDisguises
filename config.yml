@@ -11,10 +11,10 @@ SelfDisguisesScoreboard: MODIFY_SCOREBOARD
 Permission: 'libsdisguises.update'
 
 # Whats the max size allowed for command disguiseradius
-DisguiseRadiusMax: 50
+DisguiseRadiusMax: 5
 
 # Whats the max size allowed for command undisguiseradius
-UndisguiseRadiusMax: 50
+UndisguiseRadiusMax: 5
 
 # Shall the players view their disguises?
 # Best used when viewing yourself in 3rd person

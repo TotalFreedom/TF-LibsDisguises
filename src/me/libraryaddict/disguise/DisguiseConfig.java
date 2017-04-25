@@ -15,7 +15,9 @@ import me.libraryaddict.disguise.utilities.DisguiseParser.DisguiseParseException
 import me.libraryaddict.disguise.utilities.PacketsManager;
 
 public class DisguiseConfig {
+
     public static enum DisguisePushing { // This enum has a really bad name..
+
         MODIFY_SCOREBOARD, IGNORE_SCOREBOARD, CREATE_SCOREBOARD;
     }
 
@@ -62,8 +64,9 @@ public class DisguiseConfig {
     public static Entry<String, Disguise> getCustomDisguise(String disguise) {
         for (Entry<String, Disguise> entry : customDisguises.entrySet()) {
             if (!entry.getKey().equalsIgnoreCase(disguise) && !entry.getKey().replaceAll("_", "").equalsIgnoreCase(
-                    disguise))
+                    disguise)) {
                 continue;
+            }
 
             return entry;
         }
@@ -149,12 +152,12 @@ public class DisguiseConfig {
             String option = config.getString("SelfDisguisesScoreboard",
                     DisguisePushing.MODIFY_SCOREBOARD.name()).toUpperCase();
 
-            if (!option.endsWith("_SCOREBOARD"))
+            if (!option.endsWith("_SCOREBOARD")) {
                 option += "_SCOREBOARD";
+            }
 
             disablePushing = DisguisePushing.valueOf(option);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println("[LibsDisguises] Cannot parse '" + config.getString(
                     "SelfDisguisesScoreboard") + "' to a valid option for SelfDisguisesTeam");
         }
@@ -163,8 +166,9 @@ public class DisguiseConfig {
 
         File disguisesFile = new File("plugins/LibsDisguises/disguises.yml");
 
-        if (!disguisesFile.exists())
+        if (!disguisesFile.exists()) {
             return;
+        }
 
         YamlConfiguration disguisesConfig = YamlConfiguration.loadConfiguration(disguisesFile);
 
@@ -190,15 +194,14 @@ public class DisguiseConfig {
                 customDisguises.put(key, disguise);
 
                 System.out.println("[LibsDisguises] Loaded custom disguise " + key);
-            }
-            catch (DisguiseParseException e) {
+            } catch (DisguiseParseException e) {
                 System.err.println(
                         "[LibsDisguises] Error while loading custom disguise '" + key + "'" + (e.getMessage() == null ? "" : ": " + e.getMessage()));
 
-                if (e.getMessage() == null)
+                if (e.getMessage() == null) {
                     e.printStackTrace();
-            }
-            catch (Exception e) {
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -244,14 +247,16 @@ public class DisguiseConfig {
     }
 
     /**
-     * Is the plugin modifying the inventory packets so that players when self disguised, do not see their armor floating around
+     * Is the plugin modifying the inventory packets so that players when self
+     * disguised, do not see their armor floating around
      */
     public static boolean isHidingArmorFromSelf() {
         return hidingArmor;
     }
 
     /**
-     * Does the plugin appear to remove the item they are holding, to prevent a floating sword when they are viewing self disguise
+     * Does the plugin appear to remove the item they are holding, to prevent a
+     * floating sword when they are viewing self disguise
      */
     public static boolean isHidingHeldItemFromSelf() {
         return hidingHeldItem;
@@ -443,7 +448,8 @@ public class DisguiseConfig {
     }
 
     /**
-     * Does the plugin appear to remove the item they are holding, to prevent a floating sword when they are viewing self disguise
+     * Does the plugin appear to remove the item they are holding, to prevent a
+     * floating sword when they are viewing self disguise
      */
     public static void setHideHeldItemFromSelf(boolean hideHelditem) {
         if (hidingHeldItem != hideHelditem) {
@@ -541,7 +547,8 @@ public class DisguiseConfig {
     }
 
     /**
-     * Disable velocity packets being sent for w/e reason. Maybe you want every ounce of performance you can get?
+     * Disable velocity packets being sent for w/e reason. Maybe you want every
+     * ounce of performance you can get?
      *
      * @param sendVelocityPackets
      */

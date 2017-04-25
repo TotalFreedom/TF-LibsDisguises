@@ -7,6 +7,7 @@ import me.libraryaddict.disguise.disguisetypes.MetaIndex;
 import me.libraryaddict.disguise.disguisetypes.FlagWatcher;
 
 public class DroppedItemWatcher extends FlagWatcher {
+
     public DroppedItemWatcher(Disguise disguise) {
         super(disguise);
     }

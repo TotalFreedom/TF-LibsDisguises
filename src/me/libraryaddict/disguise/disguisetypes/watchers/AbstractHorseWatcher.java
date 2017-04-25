@@ -8,6 +8,7 @@ import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.MetaIndex;
 
 public abstract class AbstractHorseWatcher extends AgeableWatcher {
+
     public AbstractHorseWatcher(Disguise disguise) {
         super(disguise);
     }
@@ -65,8 +66,7 @@ public abstract class AbstractHorseWatcher extends AgeableWatcher {
 
         if (flag) {
             setData(MetaIndex.HORSE_META, (byte) (j | i));
-        }
-        else {
+        } else {
             setData(MetaIndex.HORSE_META, (byte) (j & ~i));
         }
 

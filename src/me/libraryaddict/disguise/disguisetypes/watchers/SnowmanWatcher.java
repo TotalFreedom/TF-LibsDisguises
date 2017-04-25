@@ -4,6 +4,7 @@ import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.MetaIndex;
 
 public class SnowmanWatcher extends InsentientWatcher {
+
     public SnowmanWatcher(Disguise disguise) {
         super(disguise);
     }

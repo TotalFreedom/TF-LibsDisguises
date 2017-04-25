@@ -54,11 +54,13 @@ public class DisguiseModifyPlayerCommand extends DisguiseBaseCommand implements 
 
         Disguise disguise = null;
 
-        if (sender instanceof Player)
+        if (sender instanceof Player) {
             disguise = DisguiseAPI.getDisguise((Player) sender, player);
+        }
 
-        if (disguise == null)
+        if (disguise == null) {
             disguise = DisguiseAPI.getDisguise(player);
+        }
 
         if (disguise == null) {
             sender.sendMessage(ChatColor.RED + "The player '" + player.getName() + "' is not disguised");
@@ -73,15 +75,12 @@ public class DisguiseModifyPlayerCommand extends DisguiseBaseCommand implements 
         try {
             DisguiseParser.callMethods(sender, disguise, map.get(new DisguisePerm(disguise.getType())), new ArrayList<String>(),
                     newArgs);
-        }
-        catch (DisguiseParseException ex) {
+        } catch (DisguiseParseException ex) {
             if (ex.getMessage() != null) {
                 sender.sendMessage(ex.getMessage());
             }
             return true;
-        }
-
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return true;
         }
@@ -98,15 +97,15 @@ public class DisguiseModifyPlayerCommand extends DisguiseBaseCommand implements 
 
         HashMap<DisguisePerm, HashMap<ArrayList<String>, Boolean>> perms = getPermissions(sender);
 
-        if (perms.isEmpty())
+        if (perms.isEmpty()) {
             return tabs;
+        }
 
         if (args.length == 0) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 tabs.add(player.getName());
             }
-        }
-        else {
+        } else {
             Player player = Bukkit.getPlayer(args[0]);
 
             if (player == null) {
@@ -116,11 +115,13 @@ public class DisguiseModifyPlayerCommand extends DisguiseBaseCommand implements 
 
             Disguise disguise = null;
 
-            if (sender instanceof Player)
+            if (sender instanceof Player) {
                 disguise = DisguiseAPI.getDisguise((Player) sender, player);
+            }
 
-            if (disguise == null)
+            if (disguise == null) {
                 disguise = DisguiseAPI.getDisguise(player);
+            }
 
             if (disguise == null) {
                 sender.sendMessage(ChatColor.RED + "The player '" + player.getName() + "' is not disguised");
@@ -135,8 +136,9 @@ public class DisguiseModifyPlayerCommand extends DisguiseBaseCommand implements 
                 for (int i = 1; i < args.length; i++) {
                     String arg = args[i];
 
-                    if (!method.getName().equalsIgnoreCase(arg))
+                    if (!method.getName().equalsIgnoreCase(arg)) {
                         continue;
+                    }
 
                     usedOptions.add(arg);
                 }
@@ -151,15 +153,15 @@ public class DisguiseModifyPlayerCommand extends DisguiseBaseCommand implements 
                     ParamInfo info = ReflectionFlagWatchers.getParamInfo(disguiseType, prevArg);
 
                     if (info != null) {
-                        if (info.getParamClass() != boolean.class)
+                        if (info.getParamClass() != boolean.class) {
                             addMethods = false;
+                        }
 
                         if (info.isEnums()) {
                             for (String e : info.getEnums(origArgs[origArgs.length - 1])) {
                                 tabs.add(e);
                             }
-                        }
-                        else {
+                        } else {
                             if (info.getParamClass() == String.class) {
                                 for (Player p : Bukkit.getOnlinePlayers()) {
                                     tabs.add(p.getName());

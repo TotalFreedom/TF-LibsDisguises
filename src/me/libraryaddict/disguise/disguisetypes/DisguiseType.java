@@ -5,174 +5,91 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
 public enum DisguiseType {
+
     AREA_EFFECT_CLOUD(3, 0),
-
     ARMOR_STAND(78),
-
     ARROW(60, 0),
-
     BAT,
-
     BLAZE,
-
     BOAT(1),
-
     CAVE_SPIDER,
-
     CHICKEN,
-
     COW,
-
     CREEPER,
-
     DONKEY,
-
     DRAGON_FIREBALL(93),
-
     DROPPED_ITEM(2, 1),
-
     EGG(62),
-
     ELDER_GUARDIAN,
-
     ENDER_CRYSTAL(51),
-
     ENDER_DRAGON,
-
     ENDER_PEARL(65),
-
     ENDER_SIGNAL(72),
-
     ENDERMAN,
-
     ENDERMITE,
-
     EVOKER,
-
     EVOKER_FANGS(79),
-
     EXPERIENCE_ORB,
-
     FALLING_BLOCK(70, 1),
-
     FIREBALL(63),
-
     FIREWORK(76),
-
     FISHING_HOOK(90),
-
     GHAST,
-
     GIANT,
-
     GUARDIAN,
-
     HORSE,
-
     HUSK,
-
     IRON_GOLEM,
-
     ITEM_FRAME(71),
-
     LLAMA,
-
     LLAMA_SPIT(68),
-
     LEASH_HITCH(77),
-
     MAGMA_CUBE,
-
     MINECART(10),
-
     MINECART_CHEST(10, 1),
-
     MINECART_COMMAND(10, 6),
-
     MINECART_FURNACE(10, 2),
-
     MINECART_HOPPER(10, 5),
-
     MINECART_MOB_SPAWNER(10, 4),
-
     MINECART_TNT(10, 3),
-
     MULE,
-
     MUSHROOM_COW,
-
     OCELOT,
-
     PAINTING,
-
     PIG,
-
     PIG_ZOMBIE,
-
     PLAYER,
-
     POLAR_BEAR,
-
     PRIMED_TNT(50),
-
     RABBIT,
-
     SHEEP,
-
     SHULKER,
-
     SHULKER_BULLET(67),
-
     SILVERFISH,
-
     SKELETON,
-
     SKELETON_HORSE,
-
     SLIME,
-
     SMALL_FIREBALL(63),
-
     SNOWBALL(61),
-
     SNOWMAN,
-
     SPECTRAL_ARROW(91),
-
     SPIDER,
-
     SPLASH_POTION(73, 0),
-
     SQUID,
-
     STRAY,
-
     THROWN_EXP_BOTTLE(75),
-
     TIPPED_ARROW(60),
-
     ZOMBIE_HORSE,
-
     UNKNOWN,
-
     VEX,
-
     VILLAGER,
-
     VINDICATOR,
-
     WITCH,
-
     WITHER,
-
     WITHER_SKELETON,
-
     WITHER_SKULL(66),
-
     WOLF,
-
     ZOMBIE,
-
     ZOMBIE_VILLAGER;
 
     static {
@@ -186,23 +103,21 @@ public enum DisguiseType {
                 String name;
 
                 /*   switch (type) {
-                // Disguise item frame isn't supported. So we don't give it a entity type which should prevent it from being..
-                // Usable.
-                case ITEM_FRAME:
-                    break;
-                case ZOMBIE_VILLAGER:
-                case HUSK:
-                    toUse = DisguiseType.ZOMBIE;
-                    break;
-                default:
-                    break;
-                }*/
-
+                 // Disguise item frame isn't supported. So we don't give it a entity type which should prevent it from being..
+                 // Usable.
+                 case ITEM_FRAME:
+                 break;
+                 case ZOMBIE_VILLAGER:
+                 case HUSK:
+                 toUse = DisguiseType.ZOMBIE;
+                 break;
+                 default:
+                 break;
+                 }*/
                 name = toUse.name();
 
                 type.setEntityType(EntityType.valueOf(name));
-            }
-            catch (Throwable ex) {
+            } catch (Throwable ex) {
                 // This version of Spigot doesn't have the disguise.
             }
         }
@@ -218,8 +133,7 @@ public enum DisguiseType {
     public static DisguiseType getType(EntityType entityType) {
         try {
             return valueOf(entityType.name().toUpperCase());
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             return DisguiseType.UNKNOWN;
         }
     }
@@ -235,16 +149,16 @@ public enum DisguiseType {
             int value = ints[i];
 
             switch (i) {
-            case 0:
-                objectId = value;
+                case 0:
+                    objectId = value;
 
-                break;
-            case 1:
-                defaultData = value;
+                    break;
+                case 1:
+                    defaultData = value;
 
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -266,8 +180,9 @@ public enum DisguiseType {
     }
 
     /**
-     * The object type send in packets when spawning a misc entity. Otherwise, -1.
-     * 
+     * The object type send in packets when spawning a misc entity. Otherwise,
+     * -1.
+     *
      * @return
      */
     public int getObjectId() {
@@ -275,8 +190,9 @@ public enum DisguiseType {
     }
 
     /**
-     * The TYPE id of this entity. Different from the Object Id send in spawn packets when spawning miscs.
-     * 
+     * The TYPE id of this entity. Different from the Object Id send in spawn
+     * packets when spawning miscs.
+     *
      * @return
      */
     public int getTypeId() {

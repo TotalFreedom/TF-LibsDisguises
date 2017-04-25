@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import me.libraryaddict.disguise.DisallowedDisguises;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -32,6 +33,7 @@ import me.libraryaddict.disguise.utilities.ReflectionFlagWatchers;
 import me.libraryaddict.disguise.utilities.ReflectionFlagWatchers.ParamInfo;
 
 public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCompleter {
+
     private int maxRadius = 30;
     private ArrayList<Class<? extends Entity>> validClasses = new ArrayList<>();
 
@@ -93,8 +95,7 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
             if (starting == 0) {
                 try {
                     type = EntityType.valueOf(args[0].toUpperCase());
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                 }
 
                 if (type == null) {
@@ -108,8 +109,7 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
             sender.sendMessage(ChatColor.RED + "You need to supply a disguise as well as the radius"
                     + (starting != 0 ? " and EntityType" : ""));
             return true;
-        }
-        else if (args.length < 2) {
+        } else if (args.length < 2) {
             sender.sendMessage(ChatColor.RED + "You need to supply a radius as well as the disguise");
             return true;
         }
@@ -137,15 +137,13 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
 
         try {
             disguise = DisguiseParser.parseDisguise(sender, getPermNode(), newArgs, map);
-        }
-        catch (DisguiseParseException ex) {
+        } catch (DisguiseParseException ex) {
             if (ex.getMessage() != null) {
                 sender.sendMessage(ex.getMessage());
             }
 
             return true;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return true;
         }
@@ -158,8 +156,7 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
 
         if (sender instanceof Player) {
             center = ((Player) sender).getLocation();
-        }
-        else {
+        } else {
             center = ((CraftBlockCommandSender) sender).getBlock().getLocation().add(0.5, 0, 0.5);
         }
 
@@ -186,7 +183,17 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
                     }
                 }
 
-                DisguiseAPI.disguiseToAll(entity, disguise);
+                if (!DisallowedDisguises.disabled) {
+                    if (DisallowedDisguises.isAllowed(disguise)) {
+                        DisguiseAPI.disguiseToAll(entity, disguise);
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "That disguise is forbidden.");
+                        return true;
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Disguises are disabled.");
+                    return true;
+                }
 
                 if (disguise.isDisguiseInUse()) {
                     disguisedEntitys++;
@@ -196,8 +203,7 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
 
         if (disguisedEntitys > 0) {
             sender.sendMessage(ChatColor.RED + "Successfully disguised " + disguisedEntitys + " entities!");
-        }
-        else {
+        } else {
             sender.sendMessage(ChatColor.RED + "Couldn't find any entities to disguise!");
         }
 
@@ -228,36 +234,37 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
 
         if (!isNumeric(args[0])) {
             for (Class c : validClasses) {
-                if (!c.getSimpleName().equalsIgnoreCase(args[0]))
+                if (!c.getSimpleName().equalsIgnoreCase(args[0])) {
                     continue;
+                }
 
                 starting = 2;
                 break;
             }
 
             // Not a valid radius
-            if (starting == 1 || args.length == 1 || !isNumeric(args[1]))
+            if (starting == 1 || args.length == 1 || !isNumeric(args[1])) {
                 return filterTabs(tabs, origArgs);
+            }
         }
 
         if (args.length == starting) {
             for (String type : getAllowedDisguises(perms)) {
                 tabs.add(type);
             }
-        }
-        else {
+        } else {
 
             DisguisePerm disguiseType = DisguiseParser.getDisguisePerm(args[starting]);
 
-            if (disguiseType == null)
+            if (disguiseType == null) {
                 return filterTabs(tabs, origArgs);
+            }
 
             if (args.length == 1 + starting && disguiseType.getType() == DisguiseType.PLAYER) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     tabs.add(player.getName());
                 }
-            }
-            else {
+            } else {
                 ArrayList<String> usedOptions = new ArrayList<String>();
 
                 for (Method method : ReflectionFlagWatchers.getDisguiseWatcherMethods(disguiseType.getWatcherClass())) {
@@ -265,8 +272,9 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
                             : starting + 1; i < args.length; i++) {
                         String arg = args[i];
 
-                        if (!method.getName().equalsIgnoreCase(arg))
+                        if (!method.getName().equalsIgnoreCase(arg)) {
                             continue;
+                        }
 
                         usedOptions.add(arg);
                     }
@@ -281,15 +289,15 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
                         ParamInfo info = ReflectionFlagWatchers.getParamInfo(disguiseType, prevArg);
 
                         if (info != null) {
-                            if (info.getParamClass() != boolean.class)
+                            if (info.getParamClass() != boolean.class) {
                                 addMethods = false;
+                            }
 
                             if (info.isEnums()) {
                                 for (String e : info.getEnums(origArgs[origArgs.length - 1])) {
                                     tabs.add(e);
                                 }
-                            }
-                            else {
+                            } else {
                                 if (info.getParamClass() == String.class) {
                                     for (Player player : Bukkit.getOnlinePlayers()) {
                                         tabs.add(player.getName());
@@ -336,7 +344,7 @@ public class DisguiseRadiusCommand extends DisguiseBaseCommand implements TabCom
         if (allowedDisguises.contains("dropped_item") || allowedDisguises.contains("falling_block")) {
             sender.sendMessage((ChatColor.DARK_GREEN + "/disguiseradius <EntityType" + optional
                     + "> <Radius> <Dropped_Item/Falling_Block> <Id> <Durability" + optional + ">")
-                            .replace("<", "<" + ChatColor.GREEN).replace(">", ChatColor.DARK_GREEN + ">"));
+                    .replace("<", "<" + ChatColor.GREEN).replace(">", ChatColor.DARK_GREEN + ">"));
         }
 
         sender.sendMessage(

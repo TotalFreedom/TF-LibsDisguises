@@ -64,15 +64,12 @@ public class DisguisePlayerCommand extends DisguiseBaseCommand implements TabCom
 
         try {
             disguise = DisguiseParser.parseDisguise(sender, getPermNode(), newArgs, map);
-        }
-        catch (DisguiseParseException ex) {
+        } catch (DisguiseParseException ex) {
             if (ex.getMessage() != null) {
                 sender.sendMessage(ex.getMessage());
             }
             return true;
-        }
-
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return true;
         }
@@ -99,8 +96,7 @@ public class DisguisePlayerCommand extends DisguiseBaseCommand implements TabCom
         if (disguise.isDisguiseInUse()) {
             sender.sendMessage(ChatColor.RED + "Successfully disguised " + player.getName() + " as a "
                     + disguise.getType().toReadable() + "!");
-        }
-        else {
+        } else {
             sender.sendMessage(
                     ChatColor.RED + "Failed to disguise " + player.getName() + " as a " + disguise.getType().toReadable() + "!");
         }
@@ -119,32 +115,31 @@ public class DisguisePlayerCommand extends DisguiseBaseCommand implements TabCom
             for (Player player : Bukkit.getOnlinePlayers()) {
                 tabs.add(player.getName());
             }
-        }
-        else if (args.length == 1) {
+        } else if (args.length == 1) {
             for (String type : getAllowedDisguises(perms)) {
                 tabs.add(type);
             }
-        }
-        else {
+        } else {
             DisguisePerm disguiseType = DisguiseParser.getDisguisePerm(args[1]);
 
-            if (disguiseType == null)
+            if (disguiseType == null) {
                 return filterTabs(tabs, origArgs);
+            }
 
             if (args.length == 2 && disguiseType.getType() == DisguiseType.PLAYER) {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     tabs.add(player.getName());
                 }
-            }
-            else {
+            } else {
                 ArrayList<String> usedOptions = new ArrayList<String>();
 
                 for (Method method : ReflectionFlagWatchers.getDisguiseWatcherMethods(disguiseType.getWatcherClass())) {
                     for (int i = disguiseType.getType() == DisguiseType.PLAYER ? 3 : 2; i < args.length; i++) {
                         String arg = args[i];
 
-                        if (!method.getName().equalsIgnoreCase(arg))
+                        if (!method.getName().equalsIgnoreCase(arg)) {
                             continue;
+                        }
 
                         usedOptions.add(arg);
                     }
@@ -159,15 +154,15 @@ public class DisguisePlayerCommand extends DisguiseBaseCommand implements TabCom
                         ParamInfo info = ReflectionFlagWatchers.getParamInfo(disguiseType, prevArg);
 
                         if (info != null) {
-                            if (info.getParamClass() != boolean.class)
+                            if (info.getParamClass() != boolean.class) {
                                 addMethods = false;
+                            }
 
                             if (info.isEnums()) {
                                 for (String e : info.getEnums(origArgs[origArgs.length - 1])) {
                                     tabs.add(e);
                                 }
-                            }
-                            else {
+                            } else {
                                 if (info.getParamClass() == String.class) {
                                     for (Player player : Bukkit.getOnlinePlayers()) {
                                         tabs.add(player.getName());

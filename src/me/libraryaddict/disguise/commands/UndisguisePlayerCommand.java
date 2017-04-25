@@ -15,9 +15,11 @@ import org.bukkit.entity.Player;
 import me.libraryaddict.disguise.DisguiseAPI;
 
 public class UndisguisePlayerCommand implements CommandExecutor, TabCompleter {
+
     protected ArrayList<String> filterTabs(ArrayList<String> list, String[] origArgs) {
-        if (origArgs.length == 0)
+        if (origArgs.length == 0) {
             return list;
+        }
 
         Iterator<String> itel = list.iterator();
         String label = origArgs[origArgs.length - 1].toLowerCase();
@@ -25,8 +27,9 @@ public class UndisguisePlayerCommand implements CommandExecutor, TabCompleter {
         while (itel.hasNext()) {
             String name = itel.next();
 
-            if (name.toLowerCase().startsWith(label))
+            if (name.toLowerCase().startsWith(label)) {
                 continue;
+            }
 
             itel.remove();
         }
@@ -40,8 +43,9 @@ public class UndisguisePlayerCommand implements CommandExecutor, TabCompleter {
         for (int i = 0; i < args.length - 1; i++) {
             String s = args[i];
 
-            if (s.trim().isEmpty())
+            if (s.trim().isEmpty()) {
                 continue;
+            }
 
             newArgs.add(s);
         }
@@ -58,20 +62,16 @@ public class UndisguisePlayerCommand implements CommandExecutor, TabCompleter {
                     if (DisguiseAPI.isDisguised(p)) {
                         DisguiseAPI.undisguiseToAll(p);
                         sender.sendMessage(ChatColor.RED + "The player is no longer disguised");
-                    }
-                    else {
+                    } else {
                         sender.sendMessage(ChatColor.RED + "The player is not disguised!");
                     }
-                }
-                else {
+                } else {
                     sender.sendMessage(ChatColor.RED + "Player not found");
                 }
-            }
-            else {
+            } else {
                 sender.sendMessage(ChatColor.RED + "/undisguiseplayer <Name>");
             }
-        }
-        else {
+        } else {
             sender.sendMessage(ChatColor.RED + "You are forbidden to use this command.");
         }
         return true;
@@ -82,8 +82,9 @@ public class UndisguisePlayerCommand implements CommandExecutor, TabCompleter {
         ArrayList<String> tabs = new ArrayList<String>();
         String[] args = getArgs(origArgs);
 
-        if (args.length != 0)
+        if (args.length != 0) {
             return filterTabs(tabs, origArgs);
+        }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             tabs.add(player.getName());

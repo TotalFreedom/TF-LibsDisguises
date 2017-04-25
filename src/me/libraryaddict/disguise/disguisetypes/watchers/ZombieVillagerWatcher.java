@@ -17,7 +17,7 @@ public class ZombieVillagerWatcher extends ZombieWatcher {
 
     /**
      * Is this zombie a villager?
-     * 
+     *
      * @return
      */
     public boolean isVillager() {
@@ -31,7 +31,7 @@ public class ZombieVillagerWatcher extends ZombieWatcher {
 
     /**
      * Only returns a valid value if this zombie is a villager.
-     * 
+     *
      * @return
      */
     public Profession getProfession() {
@@ -39,8 +39,9 @@ public class ZombieVillagerWatcher extends ZombieWatcher {
     }
 
     /**
-     * Sets the profession of this zombie, in turn turning it into a Zombie Villager
-     * 
+     * Sets the profession of this zombie, in turn turning it into a Zombie
+     * Villager
+     *
      * @param id
      */
     @Deprecated
@@ -50,8 +51,9 @@ public class ZombieVillagerWatcher extends ZombieWatcher {
     }
 
     /**
-     * Sets the profession of this zombie, in turn turning it into a Zombie Villager
-     * 
+     * Sets the profession of this zombie, in turn turning it into a Zombie
+     * Villager
+     *
      * @param profession
      */
     public void setProfession(Profession profession) {

@@ -27,34 +27,32 @@ import me.libraryaddict.disguise.utilities.DisguiseSound.SoundType;
 import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 import me.libraryaddict.disguise.utilities.ReflectionManager;
 
-public class PacketListenerSounds extends PacketAdapter
-{
+public class PacketListenerSounds extends PacketAdapter {
+
     /**
-     * This is a fix for the stupidity that is
-     * "I can't separate the sounds from the sounds the player heard, and the sounds of the entity tracker heard"
+     * This is a fix for the stupidity that is "I can't separate the sounds from
+     * the sounds the player heard, and the sounds of the entity tracker heard"
      */
     private static boolean cancelSound;
 
-    public PacketListenerSounds(LibsDisguises plugin)
-    {
+    public PacketListenerSounds(LibsDisguises plugin) {
         super(plugin, ListenerPriority.NORMAL, Server.NAMED_SOUND_EFFECT, Server.ENTITY_STATUS);
     }
 
     @Override
-    public void onPacketSending(PacketEvent event)
-    {
-        if (event.isCancelled())
-        {
+    public void onPacketSending(PacketEvent event) {
+        if (event.isCancelled()) {
             return;
         }
 
-        if (event.isAsync())
-        {
+        if (event.isAsync()) {
             return;
         }
 
         if (event.getPlayer().getName().contains("UNKNOWN[")) // If the player is temporary
+        {
             return;
+        }
 
         event.setPacket(event.getPacket().deepClone());
 
@@ -62,20 +60,17 @@ public class PacketListenerSounds extends PacketAdapter
 
         Player observer = event.getPlayer();
 
-        if (event.getPacketType() == Server.NAMED_SOUND_EFFECT)
-        {
+        if (event.getPacketType() == Server.NAMED_SOUND_EFFECT) {
             SoundType soundType = null;
 
-            int[] soundCords = new int[]
-                {
-                        (Integer) mods.read(2), (Integer) mods.read(3), (Integer) mods.read(4)
-                };
+            int[] soundCords = new int[]{
+                (Integer) mods.read(2), (Integer) mods.read(3), (Integer) mods.read(4)
+            };
 
             int chunkX = (int) Math.floor((soundCords[0] / 8D) / 16D);
             int chunkZ = (int) Math.floor((soundCords[2] / 8D) / 16D);
 
-            if (!observer.getWorld().isChunkLoaded(chunkX, chunkZ))
-            {
+            if (!observer.getWorld().isChunkLoaded(chunkX, chunkZ)) {
                 return;
             }
 
@@ -87,87 +82,67 @@ public class PacketListenerSounds extends PacketAdapter
             String soundEffect = ReflectionManager.convertSoundEffectToString(mods.read(0));
             Entity[] entities = observer.getWorld().getChunkAt(chunkX, chunkZ).getEntities();
 
-            for (Entity entity : entities)
-            {
+            for (Entity entity : entities) {
                 Disguise entityDisguise = DisguiseAPI.getDisguise(observer, entity);
 
-                if (entityDisguise != null)
-                {
+                if (entityDisguise != null) {
                     Location loc = entity.getLocation();
 
-                    int[] entCords = new int[]
-                        {
-                                (int) (loc.getX() * 8), (int) (loc.getY() * 8), (int) (loc.getZ() * 8)
-                        };
+                    int[] entCords = new int[]{
+                        (int) (loc.getX() * 8), (int) (loc.getY() * 8), (int) (loc.getZ() * 8)
+                    };
 
-                    if (soundCords[0] != entCords[0] || soundCords[1] != entCords[1] || soundCords[2] != entCords[2])
-                    {
+                    if (soundCords[0] != entCords[0] || soundCords[1] != entCords[1] || soundCords[2] != entCords[2]) {
                         continue;
                     }
 
                     entitySound = DisguiseSound.getType(entity.getType().name());
 
-                    if (entitySound == null)
-                    {
+                    if (entitySound == null) {
                         continue;
                     }
 
                     Object obj = null;
 
-                    if (entity instanceof LivingEntity)
-                    {
-                        try
-                        {
+                    if (entity instanceof LivingEntity) {
+                        try {
                             // Use reflection so that this works for either int or double methods
                             obj = LivingEntity.class.getMethod("getHealth").invoke(entity);
 
-                            if (obj instanceof Double ? (Double) obj == 0 : (Integer) obj == 0)
-                            {
+                            if (obj instanceof Double ? (Double) obj == 0 : (Integer) obj == 0) {
                                 soundType = SoundType.DEATH;
-                            }
-                            else
-                            {
+                            } else {
                                 obj = null;
                             }
-                        }
-                        catch (Exception e)
-                        {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
 
-                    if (obj == null)
-                    {
+                    if (obj == null) {
                         boolean hasInvun = false;
 
                         Object nmsEntity = ReflectionManager.getNmsEntity(entity);
 
-                        try
-                        {
-                            if (entity instanceof LivingEntity)
-                            {
+                        try {
+                            if (entity instanceof LivingEntity) {
                                 hasInvun = ReflectionManager.getNmsField("Entity", "noDamageTicks")
                                         .getInt(nmsEntity) == ReflectionManager.getNmsField("EntityLiving", "maxNoDamageTicks")
-                                                .getInt(nmsEntity);
-                            }
-                            else
-                            {
+                                        .getInt(nmsEntity);
+                            } else {
                                 Class clazz = ReflectionManager.getNmsClass("DamageSource");
 
                                 hasInvun = (Boolean) ReflectionManager.getNmsMethod("Entity", "isInvulnerable", clazz)
                                         .invoke(nmsEntity, ReflectionManager.getNmsField(clazz, "GENERIC").get(null));
                             }
-                        }
-                        catch (Exception ex)
-                        {
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
 
                         soundType = entitySound.getType(soundEffect, !hasInvun);
                     }
 
-                    if (soundType != null)
-                    {
+                    if (soundType != null) {
                         disguise = entityDisguise;
                         disguisedEntity = entity;
                         break;
@@ -176,85 +151,68 @@ public class PacketListenerSounds extends PacketAdapter
             }
 
             if (disguise != null && disguise.isSoundsReplaced()
-                    && (disguise.isSelfDisguiseSoundsReplaced() || disguisedEntity != observer))
-            {
+                    && (disguise.isSelfDisguiseSoundsReplaced() || disguisedEntity != observer)) {
                 String sound = null;
 
                 DisguiseSound dSound = DisguiseSound.getType(disguise.getType().name());
 
-                if (dSound != null)
+                if (dSound != null) {
                     sound = dSound.getSound(soundType);
-
-                if (sound == null)
-                {
-                    event.setCancelled(true);
                 }
-                else
-                {
-                    if (sound.equals("step.grass"))
-                    {
-                        try
-                        {
+
+                if (sound == null) {
+                    event.setCancelled(true);
+                } else {
+                    if (sound.equals("step.grass")) {
+                        try {
                             int typeId = observer.getWorld().getBlockTypeIdAt((int) Math.floor(soundCords[0] / 8D),
                                     (int) Math.floor(soundCords[1] / 8D), (int) Math.floor(soundCords[2] / 8D));
 
                             Object block = ReflectionManager.getNmsMethod("RegistryMaterials", "getId", int.class)
                                     .invoke(ReflectionManager.getNmsField("Block", "REGISTRY").get(null), typeId);
 
-                            if (block != null)
-                            {
+                            if (block != null) {
                                 Object step = ReflectionManager.getNmsField("Block", "stepSound").get(block);
 
                                 mods.write(0, ReflectionManager.getNmsMethod(step.getClass(), "d").invoke(step));
                                 mods.write(1, ReflectionManager.getSoundCategory(disguise.getType()));
                             }
-                        }
-                        catch (Exception ex)
-                        {
+                        } catch (Exception ex) {
                             ex.printStackTrace();
                         }
                         // There is no else statement. Because seriously. This should never be null. Unless
                         // someone is
                         // sending fake sounds. In which case. Why cancel it.
-                    }
-                    else
-                    {
+                    } else {
                         mods.write(0, ReflectionManager.getCraftSoundEffect(sound));
                         mods.write(1, ReflectionManager.getSoundCategory(disguise.getType()));
 
                         // Time to change the pitch and volume
-                        if (soundType == SoundType.HURT || soundType == SoundType.DEATH || soundType == SoundType.IDLE)
-                        {
+                        if (soundType == SoundType.HURT || soundType == SoundType.DEATH || soundType == SoundType.IDLE) {
                             // If the volume is the default
-                            if (mods.read(5).equals(entitySound.getDamageAndIdleSoundVolume()))
-                            {
+                            if (mods.read(5).equals(entitySound.getDamageAndIdleSoundVolume())) {
                                 mods.write(5, dSound.getDamageAndIdleSoundVolume());
                             }
 
                             // Here I assume its the default pitch as I can't calculate if its real.
                             if (disguise instanceof MobDisguise && disguisedEntity instanceof LivingEntity
-                                    && ((MobDisguise) disguise).doesDisguiseAge())
-                            {
+                                    && ((MobDisguise) disguise).doesDisguiseAge()) {
                                 boolean baby = false;
 
-                                if (disguisedEntity instanceof Zombie)
-                                {
+                                if (disguisedEntity instanceof Zombie) {
                                     baby = ((Zombie) disguisedEntity).isBaby();
-                                }
-                                else if (disguisedEntity instanceof Ageable)
-                                {
+                                } else if (disguisedEntity instanceof Ageable) {
                                     baby = !((Ageable) disguisedEntity).isAdult();
                                 }
 
-                                if (((MobDisguise) disguise).isAdult() == baby)
-                                {
+                                if (((MobDisguise) disguise).isAdult() == baby) {
                                     float pitch = (Float) mods.read(6);
 
-                                    if (baby)
-                                    {
+                                    if (baby) {
                                         // If the pitch is not the expected
-                                        if (pitch > 97 || pitch < 111)
+                                        if (pitch > 97 || pitch < 111) {
                                             return;
+                                        }
 
                                         pitch = (DisguiseUtilities.random.nextFloat() - DisguiseUtilities.random.nextFloat())
                                                 * 0.2F + 1.5F;
@@ -262,12 +220,11 @@ public class PacketListenerSounds extends PacketAdapter
                                         // Cap = 97.5
                                         // Max = 1.7
                                         // Cap = 110.5
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         // If the pitch is not the expected
-                                        if (pitch >= 63 || pitch <= 76)
+                                        if (pitch >= 63 || pitch <= 76) {
                                             return;
+                                        }
 
                                         pitch = (DisguiseUtilities.random.nextFloat() - DisguiseUtilities.random.nextFloat())
                                                 * 0.2F + 1.0F;
@@ -279,11 +236,13 @@ public class PacketListenerSounds extends PacketAdapter
 
                                     pitch *= 63;
 
-                                    if (pitch < 0)
+                                    if (pitch < 0) {
                                         pitch = 0;
+                                    }
 
-                                    if (pitch > 255)
+                                    if (pitch > 255) {
                                         pitch = 255;
+                                    }
 
                                     mods.write(6, pitch);
                                 }
@@ -292,11 +251,8 @@ public class PacketListenerSounds extends PacketAdapter
                     }
                 }
             }
-        }
-        else if (event.getPacketType() == Server.ENTITY_STATUS)
-        {
-            if ((byte) mods.read(1) != 2)
-            {
+        } else if (event.getPacketType() == Server.ENTITY_STATUS) {
+            if ((byte) mods.read(1) != 2) {
                 return;
             }
 
@@ -306,61 +262,50 @@ public class PacketListenerSounds extends PacketAdapter
             Disguise disguise = DisguiseAPI.getDisguise(observer, entity);
 
             if (disguise != null && !disguise.getType().isPlayer()
-                    && (disguise.isSelfDisguiseSoundsReplaced() || entity != event.getPlayer()))
-            {
+                    && (disguise.isSelfDisguiseSoundsReplaced() || entity != event.getPlayer())) {
                 DisguiseSound disSound = DisguiseSound.getType(entity.getType().name());
 
-                if (disSound == null)
+                if (disSound == null) {
                     return;
+                }
 
                 SoundType soundType = null;
                 Object obj = null;
 
-                if (entity instanceof LivingEntity)
-                {
-                    try
-                    {
+                if (entity instanceof LivingEntity) {
+                    try {
                         obj = LivingEntity.class.getMethod("getHealth").invoke(entity);
 
-                        if (obj instanceof Double ? (Double) obj == 0 : (Integer) obj == 0)
-                        {
+                        if (obj instanceof Double ? (Double) obj == 0 : (Integer) obj == 0) {
                             soundType = SoundType.DEATH;
-                        }
-                        else
-                        {
+                        } else {
                             obj = null;
                         }
-                    }
-                    catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
-                if (obj == null)
-                {
+                if (obj == null) {
                     soundType = SoundType.HURT;
                 }
 
                 if (disSound.getSound(soundType) == null
-                        || (disguise.isSelfDisguiseSoundsReplaced() && entity == event.getPlayer()))
-                {
-                    if (disguise.isSelfDisguiseSoundsReplaced() && entity == event.getPlayer())
-                    {
+                        || (disguise.isSelfDisguiseSoundsReplaced() && entity == event.getPlayer())) {
+                    if (disguise.isSelfDisguiseSoundsReplaced() && entity == event.getPlayer()) {
                         cancelSound = !cancelSound;
 
-                        if (cancelSound)
+                        if (cancelSound) {
                             return;
+                        }
                     }
 
                     disSound = DisguiseSound.getType(disguise.getType().name());
 
-                    if (disSound != null)
-                    {
+                    if (disSound != null) {
                         String sound = disSound.getSound(soundType);
 
-                        if (sound != null)
-                        {
+                        if (sound != null) {
                             Location loc = entity.getLocation();
 
                             PacketContainer packet = new PacketContainer(Server.NAMED_SOUND_EFFECT);
@@ -378,34 +323,33 @@ public class PacketListenerSounds extends PacketAdapter
 
                             float pitch;
 
-                            if (disguise instanceof MobDisguise && !((MobDisguise) disguise).isAdult())
-                            {
+                            if (disguise instanceof MobDisguise && !((MobDisguise) disguise).isAdult()) {
                                 pitch = (DisguiseUtilities.random.nextFloat() - DisguiseUtilities.random.nextFloat()) * 0.2F
                                         + 1.5F;
-                            }
-                            else
+                            } else {
                                 pitch = (DisguiseUtilities.random.nextFloat() - DisguiseUtilities.random.nextFloat()) * 0.2F
                                         + 1.0F;
+                            }
 
-                            if (disguise.getType() == DisguiseType.BAT)
+                            if (disguise.getType() == DisguiseType.BAT) {
                                 pitch *= 95F;
+                            }
 
                             pitch *= 63;
 
-                            if (pitch < 0)
+                            if (pitch < 0) {
                                 pitch = 0;
+                            }
 
-                            if (pitch > 255)
+                            if (pitch > 255) {
                                 pitch = 255;
+                            }
 
                             mods.write(6, (int) pitch);
 
-                            try
-                            {
+                            try {
                                 ProtocolLibrary.getProtocolManager().sendServerPacket(observer, packet, false);
-                            }
-                            catch (InvocationTargetException e)
-                            {
+                            } catch (InvocationTargetException e) {
                                 e.printStackTrace();
                             }
                         }

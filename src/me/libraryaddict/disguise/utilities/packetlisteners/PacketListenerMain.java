@@ -22,19 +22,23 @@ import me.libraryaddict.disguise.utilities.PacketsManager;
 import me.libraryaddict.disguise.utilities.PacketsManager.LibsPackets;
 
 public class PacketListenerMain extends PacketAdapter {
+
     public PacketListenerMain(LibsDisguises plugin, ArrayList<PacketType> packetsToListen) {
         super(plugin, ListenerPriority.HIGH, packetsToListen);
     }
 
     @Override
     public void onPacketSending(final PacketEvent event) {
-        if (event.isCancelled())
+        if (event.isCancelled()) {
             return;
+        }
 
         final Player observer = event.getPlayer();
 
         if (observer.getName().contains("UNKNOWN[")) // If the player is temporary
+        {
             return;
+        }
 
         // First get the entity, the one sending this packet
         StructureModifier<Entity> entityModifer = event.getPacket().getEntityModifier(observer.getWorld());
@@ -43,20 +47,21 @@ public class PacketListenerMain extends PacketAdapter {
 
         // If the entity is the same as the sender. Don't disguise!
         // Prevents problems and there is no advantage to be gained.
-        if (entity == observer)
+        if (entity == observer) {
             return;
+        }
 
         final Disguise disguise = DisguiseAPI.getDisguise(observer, entity);
 
-        if (disguise == null)
+        if (disguise == null) {
             return;
+        }
 
         LibsPackets packets;
 
         try {
             packets = PacketsManager.transformPacket(event.getPacket(), disguise, observer, entity);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             event.setCancelled(true);
             return;
@@ -76,8 +81,7 @@ public class PacketListenerMain extends PacketAdapter {
             }
 
             packets.sendDelayed(observer);
-        }
-        catch (InvocationTargetException ex) {
+        } catch (InvocationTargetException ex) {
             ex.printStackTrace();
         }
 

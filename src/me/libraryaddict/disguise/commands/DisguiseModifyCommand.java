@@ -24,6 +24,7 @@ import me.libraryaddict.disguise.utilities.ReflectionFlagWatchers;
 import me.libraryaddict.disguise.utilities.ReflectionFlagWatchers.ParamInfo;
 
 public class DisguiseModifyCommand extends DisguiseBaseCommand implements TabCompleter {
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Entity)) {
@@ -58,15 +59,13 @@ public class DisguiseModifyCommand extends DisguiseBaseCommand implements TabCom
         try {
             DisguiseParser.callMethods(sender, disguise, getPermissions(sender).get(new DisguisePerm(disguise.getType())),
                     new ArrayList<String>(), args);
-        }
-        catch (DisguiseParseException ex) {
+        } catch (DisguiseParseException ex) {
             if (ex.getMessage() != null) {
                 sender.sendMessage(ex.getMessage());
             }
 
             return true;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return true;
         }
@@ -80,13 +79,15 @@ public class DisguiseModifyCommand extends DisguiseBaseCommand implements TabCom
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] origArgs) {
         ArrayList<String> tabs = new ArrayList<String>();
 
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Player)) {
             return tabs;
+        }
 
         Disguise disguise = DisguiseAPI.getDisguise((Player) sender, (Entity) sender);
 
-        if (disguise == null)
+        if (disguise == null) {
             return tabs;
+        }
 
         String[] args = getArgs(origArgs);
 
@@ -100,8 +101,9 @@ public class DisguiseModifyCommand extends DisguiseBaseCommand implements TabCom
             for (int i = disguiseType.getType() == DisguiseType.PLAYER ? 2 : 1; i < args.length; i++) {
                 String arg = args[i];
 
-                if (!method.getName().equalsIgnoreCase(arg))
+                if (!method.getName().equalsIgnoreCase(arg)) {
                     continue;
+                }
 
                 usedOptions.add(arg);
             }
@@ -116,15 +118,15 @@ public class DisguiseModifyCommand extends DisguiseBaseCommand implements TabCom
                 ParamInfo info = ReflectionFlagWatchers.getParamInfo(disguiseType, prevArg);
 
                 if (info != null) {
-                    if (info.getParamClass() != boolean.class)
+                    if (info.getParamClass() != boolean.class) {
                         addMethods = false;
+                    }
 
                     if (info.isEnums()) {
                         for (String e : info.getEnums(origArgs[origArgs.length - 1])) {
                             tabs.add(e);
                         }
-                    }
-                    else {
+                    } else {
                         if (info.getParamClass() == String.class) {
                             for (Player player : Bukkit.getOnlinePlayers()) {
                                 tabs.add(player.getName());

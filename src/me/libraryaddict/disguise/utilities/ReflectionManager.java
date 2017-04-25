@@ -44,6 +44,7 @@ import com.google.gson.Gson;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 
 public class ReflectionManager {
+
     private static final String bukkitVersion = Bukkit.getServer().getClass().getName().split("\\.")[3];
     private static final Class<?> craftItemClass;
     private static Method damageAndIdleSoundMethod;
@@ -70,8 +71,7 @@ public class ReflectionManager {
                         break;
                     }
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
@@ -104,7 +104,7 @@ public class ReflectionManager {
         if (!id.contains("-")) {
             id = Pattern.compile(
                     "([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)").matcher(
-                    id).replaceFirst("$1-$2-$3-$4-$5");
+                            id).replaceFirst("$1-$2-$3-$4-$5");
         }
 
         WrappedGameProfile gameProfile = new WrappedGameProfile(UUID.fromString(id), (String) response.get("name"));
@@ -142,7 +142,7 @@ public class ReflectionManager {
                     entityObject = entityClass.getDeclaredConstructor(getNmsClass("MinecraftServer"),
                             getNmsClass("WorldServer"), gameProfile.getHandleType(),
                             playerinteractmanager.getClass()).newInstance(minecraftServer, world,
-                            gameProfile.getHandle(), playerinteractmanager);
+                                    gameProfile.getHandle(), playerinteractmanager);
                     break;
                 case "EnderPearl":
                     entityObject = entityClass.getDeclaredConstructor(getNmsClass("World"),
@@ -151,7 +151,7 @@ public class ReflectionManager {
                 case "Potion":
                     entityObject = entityClass.getDeclaredConstructor(getNmsClass("World"), Double.TYPE, Double.TYPE,
                             Double.TYPE, getNmsClass("ItemStack")).newInstance(world, 0d, 0d, 0d,
-                            getNmsItem(new ItemStack(Material.SPLASH_POTION)));
+                                    getNmsItem(new ItemStack(Material.SPLASH_POTION)));
                     break;
                 case "FishingHook":
                     entityObject = entityClass.getDeclaredConstructor(getNmsClass("World"),
@@ -163,8 +163,7 @@ public class ReflectionManager {
             }
 
             return entityObject;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -176,8 +175,7 @@ public class ReflectionManager {
 
         try {
             return nmsMethod.invoke(null, id);
-        }
-        catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
@@ -193,9 +191,8 @@ public class ReflectionManager {
         try {
             return getNmsClass("MobEffect").getDeclaredConstructor(getNmsClass("MobEffectList"), Integer.TYPE,
                     Integer.TYPE, Boolean.TYPE, Boolean.TYPE).newInstance(getMobEffectList(id), duration, amplification,
-                    ambient, particles);
-        }
-        catch (Exception e) {
+                            ambient, particles);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -239,8 +236,7 @@ public class ReflectionManager {
             }
 
             return new FakeBoundingBox(x, y, z);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -250,8 +246,7 @@ public class ReflectionManager {
     public static Entity getBukkitEntity(Object nmsEntity) {
         try {
             return (Entity) getNmsMethod("Entity", "getBukkitEntity").invoke(nmsEntity);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -261,8 +256,7 @@ public class ReflectionManager {
     public static ItemStack getBukkitItem(Object nmsItem) {
         try {
             return (ItemStack) craftItemClass.getMethod("asBukkitCopy", getNmsClass("ItemStack")).invoke(null, nmsItem);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -276,8 +270,7 @@ public class ReflectionManager {
     public static Class<?> getCraftClass(String className) {
         try {
             return Class.forName("org.bukkit.craftbukkit." + getBukkitVersion() + "." + className);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -289,8 +282,7 @@ public class ReflectionManager {
             Constructor declaredConstructor = clazz.getDeclaredConstructor(parameters);
             declaredConstructor.setAccessible(true);
             return declaredConstructor;
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
 
@@ -304,8 +296,7 @@ public class ReflectionManager {
     public static String getCraftSound(Sound sound) {
         try {
             return (String) getCraftClass("CraftSound").getMethod("getSound", Sound.class).invoke(null, sound);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -323,8 +314,7 @@ public class ReflectionManager {
     public static Object getMinecraftServer() {
         try {
             return getCraftMethod("CraftServer", "getServer").invoke(Bukkit.getServer());
-        }
-        catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;
@@ -338,8 +328,7 @@ public class ReflectionManager {
                     return (String) field.get(enumArt);
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -350,8 +339,7 @@ public class ReflectionManager {
         try {
             return getNmsClass("BlockPosition").getDeclaredConstructor(int.class, int.class, int.class).newInstance(x,
                     y, z);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -361,8 +349,7 @@ public class ReflectionManager {
     public static Enum getEnumDirection(int direction) {
         try {
             return (Enum) getNmsMethod("EnumDirection", "fromType2", int.class).invoke(null, direction);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -372,8 +359,7 @@ public class ReflectionManager {
     public static Enum getEnumPlayerInfoAction(int action) {
         try {
             return (Enum) getNmsClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction").getEnumConstants()[action];
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -388,9 +374,8 @@ public class ReflectionManager {
             return getNmsClass("PacketPlayOutPlayerInfo$PlayerInfoData").getDeclaredConstructor(
                     getNmsClass("PacketPlayOutPlayerInfo"), gameProfile.getHandleType(), int.class,
                     getNmsClass("EnumGamemode"), getNmsClass("IChatBaseComponent")).newInstance(playerInfoPacket,
-                    gameProfile.getHandle(), 0, getNmsClass("EnumGamemode").getEnumConstants()[1], playerListName);
-        }
-        catch (Exception ex) {
+                            gameProfile.getHandle(), 0, getNmsClass("EnumGamemode").getEnumConstants()[1], playerListName);
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -404,8 +389,7 @@ public class ReflectionManager {
     public static WrappedGameProfile getGameProfile(UUID uuid, String playerName) {
         try {
             return new WrappedGameProfile(uuid != null ? uuid : UUID.randomUUID(), playerName);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;
@@ -426,8 +410,7 @@ public class ReflectionManager {
             }
 
             return gameProfile;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -437,8 +420,7 @@ public class ReflectionManager {
     public static Class getNmsClass(String className) {
         try {
             return Class.forName("net.minecraft.server." + getBukkitVersion() + "." + className);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -450,8 +432,7 @@ public class ReflectionManager {
             Constructor declaredConstructor = clazz.getDeclaredConstructor(parameters);
             declaredConstructor.setAccessible(true);
             return declaredConstructor;
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
 
@@ -465,8 +446,7 @@ public class ReflectionManager {
     public static Object getNmsEntity(Entity entity) {
         try {
             return getCraftClass("entity.CraftEntity").getMethod("getHandle").invoke(entity);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -479,8 +459,7 @@ public class ReflectionManager {
             declaredField.setAccessible(true);
 
             return declaredField;
-        }
-        catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
 
@@ -494,8 +473,7 @@ public class ReflectionManager {
     public static Object getNmsItem(ItemStack itemstack) {
         try {
             return craftItemClass.getDeclaredMethod("asNMSCopy", ItemStack.class).invoke(null, itemstack);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -512,8 +490,7 @@ public class ReflectionManager {
             declaredMethod.setAccessible(true);
 
             return declaredMethod;
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
 
@@ -526,8 +503,7 @@ public class ReflectionManager {
             declaredMethod.setAccessible(true);
 
             return declaredMethod;
-        }
-        catch (NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
 
@@ -541,8 +517,7 @@ public class ReflectionManager {
     public static double getPing(Player player) {
         try {
             return (double) pingField.getInt(ReflectionManager.getNmsEntity(player));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -556,8 +531,7 @@ public class ReflectionManager {
 
             float height = (Float) getNmsMethod("Entity", "getHeadHeight").invoke(getNmsEntity(entity));
             return new float[]{length, width, height};
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -577,8 +551,7 @@ public class ReflectionManager {
                                     boolean.class).invoke(session, gameProfile.getHandle(), true));
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -590,8 +563,7 @@ public class ReflectionManager {
             damageAndIdleSoundMethod.setAccessible(true);
 
             return (Float) damageAndIdleSoundMethod.invoke(entity);
-        }
-        catch (Exception ignored) {
+        } catch (Exception ignored) {
         }
         return null;
     }
@@ -610,7 +582,7 @@ public class ReflectionManager {
 
                     profileRepo.getClass().getDeclaredMethod("findProfilesByNames", String[].class, agent.getClass(),
                             Class.forName("com.mojang.authlib.ProfileLookupCallback")).invoke(profileRepo,
-                            new String[]{playername}, agent, callback);
+                                    new String[]{playername}, agent, callback);
 
                     if (callback.getGameProfile() != null) {
                         return callback.getGameProfile();
@@ -619,8 +591,7 @@ public class ReflectionManager {
                     return getGameProfile(null, playername);
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -640,8 +611,7 @@ public class ReflectionManager {
                     loc.getY() + newBox.getY(), loc.getZ() + newBox.getZ());
 
             setBoundingBoxMethod.invoke(getNmsEntity(entity), boundingBox);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -657,14 +627,14 @@ public class ReflectionManager {
                 Enum[] enums = clazz != null ? (Enum[]) clazz.getEnumConstants() : null;
 
                 for (Enum anEnum : enums != null ? enums : new Enum[0]) {
-                    if (anEnum.name().equals(category.toUpperCase()))
+                    if (anEnum.name().equals(category.toUpperCase())) {
                         return anEnum;
+                    }
                 }
             }
 
             return invoke;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -672,16 +642,19 @@ public class ReflectionManager {
     }
 
     public static Enum getSoundCategory(DisguiseType disguiseType) {
-        if (disguiseType == DisguiseType.PLAYER)
+        if (disguiseType == DisguiseType.PLAYER) {
             return getSoundCategory("player");
+        }
 
         Class<? extends Entity> entityClass = disguiseType.getEntityType().getEntityClass();
 
-        if (Monster.class.isAssignableFrom(entityClass))
+        if (Monster.class.isAssignableFrom(entityClass)) {
             return getSoundCategory("hostile");
+        }
 
-        if (Ambient.class.isAssignableFrom(entityClass))
+        if (Ambient.class.isAssignableFrom(entityClass)) {
             return getSoundCategory("ambient");
+        }
 
         return getSoundCategory("neutral");
     }
@@ -697,8 +670,9 @@ public class ReflectionManager {
 
         Object[] enums = clazz != null ? clazz.getEnumConstants() : null;
 
-        if (enums == null)
+        if (enums == null) {
             return null;
+        }
 
         switch (slot) {
             case HAND:
@@ -741,8 +715,7 @@ public class ReflectionManager {
                 case "HEAD":
                     return EquipmentSlot.HEAD;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
 
         return null;
@@ -755,8 +728,9 @@ public class ReflectionManager {
      * @return null if the disguisedEntity is not an instance of a living entity
      */
     public static ItemStack getEquipment(EquipmentSlot slot, Entity disguisedEntity) {
-        if (!(disguisedEntity instanceof LivingEntity))
+        if (!(disguisedEntity instanceof LivingEntity)) {
             return null;
+        }
 
         switch (slot) {
             case HAND:
@@ -788,8 +762,7 @@ public class ReflectionManager {
             MinecraftKey key = MinecraftKey.fromHandle(f_getMinecraftKey.get(soundEffect));
 
             return key.getKey();
-        }
-        catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -799,8 +772,7 @@ public class ReflectionManager {
     public static Object getCraftSoundEffect(String sound) {
         try {
             return getCraftMethod("CraftSound", "getSoundEffect", String.class).invoke(null, sound);
-        }
-        catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
@@ -811,8 +783,9 @@ public class ReflectionManager {
         if (value instanceof Optional) {
             Optional opt = (Optional) value;
 
-            if (!opt.isPresent())
+            if (!opt.isPresent()) {
                 return value;
+            }
 
             Object val = opt.get();
 
@@ -823,15 +796,13 @@ public class ReflectionManager {
                     return Optional.of(
                             getNmsConstructor("BlockPosition", int.class, int.class, int.class).newInstance(pos.getX(),
                                     pos.getY(), pos.getZ()));
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             } else if (val instanceof WrappedBlockData) {
                 try {
                     return Optional.of(((WrappedBlockData) val).getHandle());
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
@@ -841,16 +812,14 @@ public class ReflectionManager {
             try {
                 return getNmsConstructor("Vector3f", float.class, float.class, float.class).newInstance(angle.getX(),
                         angle.getY(), angle.getZ());
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         } else if (value instanceof Direction) {
             try {
                 return (Enum) getNmsMethod("EnumDirection", "fromType1", int.class).invoke(null,
                         ((Direction) value).ordinal());
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         } else if (value instanceof BlockPosition) {
@@ -859,8 +828,7 @@ public class ReflectionManager {
             try {
                 return getNmsConstructor("BlockPosition", int.class, int.class, int.class).newInstance(pos.getX(),
                         pos.getY(), pos.getZ());
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         } else if (value instanceof ItemStack) {
@@ -878,8 +846,9 @@ public class ReflectionManager {
      * @return
      */
     private static Object createDataWatcherItem(int id, Object value) {
-        if (value == null)
+        if (value == null) {
             return null;
+        }
 
         value = convertInvalidItem(value);
 
@@ -905,8 +874,7 @@ public class ReflectionManager {
 
         try {
             return construct.newInstance(watcherObject.getHandle(), value);
-        }
-        catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
@@ -931,8 +899,7 @@ public class ReflectionManager {
     public static Object getWorldServer(World w) {
         try {
             return getCraftMethod("CraftWorld", "getHandle").invoke(w);
-        }
-        catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
@@ -944,8 +911,7 @@ public class ReflectionManager {
 
         try {
             return getNmsConstructor("PlayerInteractManager", getNmsClass("World")).newInstance(worldServer);
-        }
-        catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
 

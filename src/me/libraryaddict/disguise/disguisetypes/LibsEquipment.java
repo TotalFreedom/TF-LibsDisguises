@@ -6,6 +6,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class LibsEquipment implements EntityEquipment {
+
     private ItemStack[] equipment = new ItemStack[EquipmentSlot.values().length];
     private FlagWatcher flagWatcher;
 
@@ -19,8 +20,9 @@ public class LibsEquipment implements EntityEquipment {
         for (int i = 0; i < equipment.length; i++) {
             ItemStack item = equipment[i];
 
-            if (item == null)
+            if (item == null) {
                 continue;
+            }
 
             newEquip.equipment[i] = item.clone();
         }
@@ -33,8 +35,9 @@ public class LibsEquipment implements EntityEquipment {
     }
 
     public void setItem(EquipmentSlot slot, ItemStack item) {
-        if (getItem(slot) == item)
+        if (getItem(slot) == item) {
             return;
+        }
 
         equipment[slot.ordinal()] = item;
         flagWatcher.sendItemStack(slot, item);
@@ -112,8 +115,8 @@ public class LibsEquipment implements EntityEquipment {
 
     @Override
     public ItemStack[] getArmorContents() {
-        return new ItemStack[] {
-                getBoots(), getLeggings(), getChestplate(), getHelmet()
+        return new ItemStack[]{
+            getBoots(), getLeggings(), getChestplate(), getHelmet()
         };
     }
 

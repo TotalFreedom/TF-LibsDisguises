@@ -23,8 +23,8 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        for (String node : new String[] {
-                "disguise", "disguiseradius", "disguiseentity", "disguiseplayer"
+        for (String node : new String[]{
+            "disguise", "disguiseradius", "disguiseentity", "disguiseplayer"
         }) {
             HashMap<DisguisePerm, HashMap<ArrayList<String>, Boolean>> permMap = DisguiseParser.getPermissions(sender,
                     "libsdisguises." + node + ".");
@@ -33,8 +33,7 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
                 if (args.length == 0) {
                     sendCommandUsage(sender, null);
                     return true;
-                }
-                else {
+                } else {
                     ParamInfo help = null;
 
                     for (ParamInfo s : ReflectionFlagWatchers.getParamInfos()) {
@@ -80,8 +79,7 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
                                             allowed = true;
                                             break;
                                         }
-                                    }
-                                    else if (!key.contains(method.getName().toLowerCase())) {
+                                    } else if (!key.contains(method.getName().toLowerCase())) {
                                         allowed = true;
                                         break;
                                     }
@@ -96,8 +94,9 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
                             Class c = method.getParameterTypes()[0];
                             ParamInfo info = ReflectionFlagWatchers.getParamInfo(c);
 
-                            if (info == null)
+                            if (info == null) {
                                 continue;
+                            }
 
                             ChatColor methodColor = ChatColor.YELLOW;
 
@@ -105,8 +104,7 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
 
                             if (declaring == LivingWatcher.class) {
                                 methodColor = ChatColor.AQUA;
-                            }
-                            else if (!(FlagWatcher.class.isAssignableFrom(declaring)) || declaring == FlagWatcher.class) {
+                            } else if (!(FlagWatcher.class.isAssignableFrom(declaring)) || declaring == FlagWatcher.class) {
                                 methodColor = ChatColor.GRAY;
                             }
 
@@ -116,8 +114,7 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
                             map.put(str, methodColor);
                             methods.add(str);
                         }
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         ex.printStackTrace();
                     }
 
@@ -153,16 +150,17 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
         ArrayList<String> tabs = new ArrayList<String>();
         String[] args = getArgs(origArgs);
 
-        for (String node : new String[] {
-                "disguise", "disguiseradius", "disguiseentity", "disguiseplayer"
+        for (String node : new String[]{
+            "disguise", "disguiseradius", "disguiseentity", "disguiseplayer"
         }) {
             HashMap<DisguisePerm, HashMap<ArrayList<String>, Boolean>> perms = DisguiseParser.getPermissions(sender,
                     "libsdisguises." + node + ".");
 
             if (args.length == 0) {
                 for (DisguisePerm type : perms.keySet()) {
-                    if (type.isUnknown())
+                    if (type.isUnknown()) {
                         continue;
+                    }
 
                     tabs.add(type.toReadable().replaceAll(" ", "_"));
                 }
@@ -170,8 +168,7 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
                 for (ParamInfo s : ReflectionFlagWatchers.getParamInfos()) {
                     tabs.add(s.getName().replaceAll(" ", ""));
                 }
-            }
-            else if (DisguiseParser.getDisguisePerm(args[0]) == null) {
+            } else if (DisguiseParser.getDisguisePerm(args[0]) == null) {
                 tabs.add("Show");
             }
         }
