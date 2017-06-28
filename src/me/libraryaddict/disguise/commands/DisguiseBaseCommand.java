@@ -19,9 +19,8 @@ import me.libraryaddict.disguise.utilities.DisguiseParser.DisguisePerm;
 public abstract class DisguiseBaseCommand implements CommandExecutor {
 
     protected ArrayList<String> filterTabs(ArrayList<String> list, String[] origArgs) {
-        if (origArgs.length == 0) {
+        if (origArgs.length == 0)
             return list;
-        }
 
         Iterator<String> itel = list.iterator();
         String label = origArgs[origArgs.length - 1].toLowerCase();
@@ -29,9 +28,8 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
         while (itel.hasNext()) {
             String name = itel.next();
 
-            if (name.toLowerCase().startsWith(label)) {
+            if (name.toLowerCase().startsWith(label))
                 continue;
-            }
 
             itel.remove();
         }
@@ -43,11 +41,13 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
         ArrayList<String> allowedDisguises = new ArrayList<>();
 
         for (DisguisePerm type : hashMap.keySet()) {
-            if (type.isUnknown()) {
+            if (type.isUnknown())
                 continue;
-            }
-            if (DisallowedDisguises.isAllowed(type.getType()) && !type.isUnknown()) {
-                allowedDisguises.add(type.toReadable().replaceAll(" ", "_"));
+
+            final String name = type.toReadable().replaceAll(" ", "_");
+            
+            if (DisallowedDisguises.isAllowed(DisguiseParser.getDisguisePerm(name).getType())) {
+                allowedDisguises.add(name);
             }
         }
 
@@ -62,9 +62,8 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
         for (int i = 0; i < args.length - 1; i++) {
             String s = args[i];
 
-            if (s.trim().isEmpty()) {
+            if (s.trim().isEmpty())
                 continue;
-            }
 
             newArgs.add(s);
         }
@@ -77,16 +76,12 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
             return "disguise";
         } else if (this instanceof DisguiseEntityCommand) {
             return "disguiseentity";
-        } else if (this instanceof DisguisePlayerCommand) {
-            return "disguiseplayer";
         } else if (this instanceof DisguiseRadiusCommand) {
             return "disguiseradius";
         } else if (this instanceof DisguiseModifyCommand) {
             return "disguisemodify";
         } else if (this instanceof DisguiseModifyEntityCommand) {
             return "disguisemodifyentity";
-        } else if (this instanceof DisguiseModifyPlayerCommand) {
-            return "disguisemodifyplayer";
         } else if (this instanceof DisguiseModifyRadiusCommand) {
             return "disguisemodifyradius";
         } else {
@@ -102,7 +97,8 @@ public abstract class DisguiseBaseCommand implements CommandExecutor {
         try {
             Integer.parseInt(string);
             return true;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             return false;
         }
     }

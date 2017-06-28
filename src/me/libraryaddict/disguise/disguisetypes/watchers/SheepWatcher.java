@@ -10,8 +10,6 @@ public class SheepWatcher extends AgeableWatcher {
 
     public SheepWatcher(Disguise disguise) {
         super(disguise);
-
-        setData(MetaIndex.SHEEP_WOOL, (byte) 0);
     }
 
     public AnimalColor getColor() {
@@ -19,7 +17,7 @@ public class SheepWatcher extends AgeableWatcher {
     }
 
     public boolean isSheared() {
-        return ((byte) getData(MetaIndex.SHEEP_WOOL) & 16) != 0;
+        return (getData(MetaIndex.SHEEP_WOOL) & 16) != 0;
     }
 
     public void setColor(AnimalColor color) {
@@ -27,14 +25,14 @@ public class SheepWatcher extends AgeableWatcher {
     }
 
     public void setColor(DyeColor color) {
-        byte b0 = (byte) getData(MetaIndex.SHEEP_WOOL);
+        byte b0 = getData(MetaIndex.SHEEP_WOOL);
 
         setData(MetaIndex.SHEEP_WOOL, (byte) (b0 & 240 | color.getWoolData() & 15));
         sendData(MetaIndex.SHEEP_WOOL);
     }
 
     public void setSheared(boolean flag) {
-        byte b0 = (byte) getData(MetaIndex.SHEEP_WOOL);
+        byte b0 = getData(MetaIndex.SHEEP_WOOL);
 
         if (flag) {
             setData(MetaIndex.SHEEP_WOOL, (byte) (b0 | 16));

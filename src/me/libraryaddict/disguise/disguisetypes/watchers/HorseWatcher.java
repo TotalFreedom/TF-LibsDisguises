@@ -10,7 +10,6 @@ import me.libraryaddict.disguise.disguisetypes.MetaIndex;
 import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 
 public class HorseWatcher extends AbstractHorseWatcher {
-
     public HorseWatcher(Disguise disguise) {
         super(disguise);
 
@@ -26,14 +25,14 @@ public class HorseWatcher extends AbstractHorseWatcher {
         int horseValue = getHorseArmorAsInt();
 
         switch (horseValue) {
-            case 1:
-                return new ItemStack(Material.IRON_BARDING);
-            case 2:
-                return new ItemStack(Material.GOLD_BARDING);
-            case 3:
-                return new ItemStack(Material.DIAMOND_BARDING);
-            default:
-                break;
+        case 1:
+            return new ItemStack(Material.IRON_BARDING);
+        case 2:
+            return new ItemStack(Material.GOLD_BARDING);
+        case 3:
+            return new ItemStack(Material.DIAMOND_BARDING);
+        default:
+            break;
         }
 
         return null;
@@ -70,9 +69,11 @@ public class HorseWatcher extends AbstractHorseWatcher {
 
             if (mat == Material.IRON_BARDING) {
                 value = 1;
-            } else if (mat == Material.GOLD_BARDING) {
+            }
+            else if (mat == Material.GOLD_BARDING) {
                 value = 2;
-            } else if (mat == Material.DIAMOND_BARDING) {
+            }
+            else if (mat == Material.DIAMOND_BARDING) {
                 value = 3;
             }
         }

@@ -4,6 +4,8 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers.Direction;
 import com.comphenix.protocol.wrappers.Vector3F;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
+import com.comphenix.protocol.wrappers.nbt.NbtCompound;
+import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.google.common.base.Optional;
 import me.libraryaddict.disguise.disguisetypes.watchers.*;
 import org.bukkit.Color;
@@ -15,7 +17,6 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class MetaIndex<Y> {
-
     private static MetaIndex[] _values = new MetaIndex[0];
 
     public static MetaIndex<Boolean> AGEABLE_BABY = new MetaIndex<>(AgeableWatcher.class, 0, false);
@@ -105,7 +106,9 @@ public class MetaIndex<Y> {
 
     public static MetaIndex<Boolean> ENTITY_SILENT = new MetaIndex<>(FlagWatcher.class, 4, false);
 
-    public static MetaIndex<Byte> EVOKER_SPELL_TICKS = new MetaIndex<>(EvokerWatcher.class, 0, (byte) 0);
+    public static MetaIndex<Byte> ILLAGER_SPELL_TICKS = new MetaIndex<>(IllagerWizardWatcher.class, 0, (byte) 0);
+
+    public static MetaIndex<Byte> ILLAGER_META = new MetaIndex<>(IllagerWatcher.class, 0, (byte) 0);
 
     public static MetaIndex<BlockPosition> FALLING_BLOCK_POSITION = new MetaIndex<>(FallingBlockWatcher.class, 0,
             BlockPosition.ORIGIN);
@@ -174,6 +177,8 @@ public class MetaIndex<Y> {
 
     public static MetaIndex<Integer> OCELOT_TYPE = new MetaIndex<>(OcelotWatcher.class, 0, 0);
 
+    public static MetaIndex<Integer> PARROT_VARIANT = new MetaIndex<>(ParrotWatcher.class, 0, 0);
+
     public static MetaIndex<Boolean> PIG_SADDLED = new MetaIndex<>(PigWatcher.class, 0, false);
 
     public static MetaIndex<Integer> PIG_UNKNOWN = new MetaIndex<>(PigWatcher.class, 1, 0);
@@ -185,6 +190,12 @@ public class MetaIndex<Y> {
     public static MetaIndex<Integer> PLAYER_SCORE = new MetaIndex<>(PlayerWatcher.class, 1, 0);
 
     public static MetaIndex<Byte> PLAYER_SKIN = new MetaIndex<>(PlayerWatcher.class, 2, (byte) 127);
+
+    public static MetaIndex<NbtCompound> PLAYER_LEFT_SHOULDER_ENTITY = new MetaIndex<>(PlayerWatcher.class, 4,
+            NbtFactory.ofCompound("None"));
+
+    public static MetaIndex<NbtCompound> PLAYER_RIGHT_SHOULDER_ENTITY = new MetaIndex<>(PlayerWatcher.class, 5,
+            NbtFactory.ofCompound("None"));
 
     public static MetaIndex<Boolean> POLAR_BEAR_STANDING = new MetaIndex<>(PolarBearWatcher.class, 0, false);
 
@@ -209,14 +220,8 @@ public class MetaIndex<Y> {
 
     public static MetaIndex<Byte> SPIDER_CLIMB = new MetaIndex<>(SpiderWatcher.class, 0, (byte) 0);
 
-    public static MetaIndex<ItemStack> SPLASH_POTION_ITEM = new MetaIndex<>(SplashPotionWatcher.class, 1,
-            new ItemStack(Material.SPLASH_POTION)); // Yeah, the '1' isn't a bug. No idea why but MC thinks
-    // there's a '0' already.
-
-    public static MetaIndex<ItemStack> SPLASH_POTION_ITEM_BAD = new MetaIndex<>(SplashPotionWatcher.class, 0,
-            new ItemStack(Material.SPLASH_POTION)); // Yeah, the '1' isn't a bug. No
-    // idea why but MC thinks there's a
-    // '0' already.
+    public static MetaIndex<ItemStack> SPLASH_POTION_ITEM = new MetaIndex<>(SplashPotionWatcher.class, 0,
+            new ItemStack(Material.SPLASH_POTION));
 
     public static MetaIndex<Byte> TAMEABLE_META = new MetaIndex<>(TameableWatcher.class, 0, (byte) 0);
 
@@ -262,23 +267,64 @@ public class MetaIndex<Y> {
     public static MetaIndex<Boolean> ZOMBIE_VILLAGER_SHAKING = new MetaIndex<>(ZombieVillagerWatcher.class, 0, false);
 
     static {
-        for (MetaIndex flagType : values()) {
-            if (flagType.getFlagWatcher() == FlagWatcher.class) {
-                continue;
+        setValues();
+    }
+
+    public static void fillInBlankIndexes() {
+        ArrayList<Entry<Class, ArrayList<MetaIndex>>> list = new ArrayList<>();
+
+        for (MetaIndex index : values()) {
+            Entry<Class, ArrayList<MetaIndex>> entry = null;
+
+            for (Entry e : list) {
+                if (e.getKey() != index.getFlagWatcher())
+                    continue;
+
+                entry = e;
+                break;
             }
+
+            if (entry == null) {
+                entry = new AbstractMap.SimpleEntry(index.getFlagWatcher(), new ArrayList<MetaIndex>());
+                list.add(entry);
+            }
+
+            entry.getValue().add(index);
+        }
+
+        for (Entry<Class, ArrayList<MetaIndex>> entry : list) {
+            Collections.sort(entry.getValue(), new Comparator<MetaIndex>() {
+                @Override
+                public int compare(MetaIndex o1, MetaIndex o2) {
+                    return o1.getIndex() - o2.getIndex();
+                }
+            });
+
+            for (MetaIndex ind : entry.getValue()) {
+                ind._index = entry.getValue().indexOf(ind);
+            }
+        }
+    }
+
+    public static void orderMetaIndexes() {
+        for (MetaIndex flagType : values()) {
+            if (flagType.getFlagWatcher() == FlagWatcher.class)
+                continue;
 
             flagType._index += getNoIndexes(flagType.getFlagWatcher().getSuperclass());
         }
+    }
 
+    public static void validateMetadata() {
         // Simple verification for the dev that he's setting up the FlagType's properly.
         // All flag types should be from 0 to <Max Number> with no empty numbers.
         // All flag types should never occur twice.
+
         HashMap<Class, Integer> maxValues = new HashMap<>();
 
         for (MetaIndex type : values()) {
-            if (maxValues.containsKey(type.getFlagWatcher()) && maxValues.get(type.getFlagWatcher()) > type.getIndex()) {
+            if (maxValues.containsKey(type.getFlagWatcher()) && maxValues.get(type.getFlagWatcher()) > type.getIndex())
                 continue;
-            }
 
             maxValues.put(type.getFlagWatcher(), type.getIndex());
         }
@@ -290,13 +336,11 @@ public class MetaIndex<Y> {
                 MetaIndex found = null;
 
                 for (MetaIndex type : values()) {
-                    if (type.getIndex() != i) {
+                    if (type.getIndex() != i)
                         continue;
-                    }
 
-                    if (!type.getFlagWatcher().isAssignableFrom(entry.getKey())) {
+                    if (!type.getFlagWatcher().isAssignableFrom(entry.getKey()))
                         continue;
-                    }
 
                     if (found != null) {
                         System.err.println(
@@ -307,9 +351,8 @@ public class MetaIndex<Y> {
                     found = type;
                 }
 
-                if (found != null) {
+                if (found != null)
                     continue;
-                }
 
                 System.err.println(entry.getKey().getSimpleName() + " has no FlagType registered for the index " + i);
             }
@@ -321,16 +364,16 @@ public class MetaIndex<Y> {
 
         try {
             for (Field field : MetaIndex.class.getFields()) {
-                if (field.getType() != MetaIndex.class) {
+                if (field.getType() != MetaIndex.class)
                     continue;
-                }
 
                 MetaIndex index = (MetaIndex) field.get(null);
 
                 toPrint.add(
                         index.getFlagWatcher().getSimpleName() + " " + field.getName() + " " + index.getIndex() + " " + index.getDefault().getClass().getSimpleName());
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -343,13 +386,11 @@ public class MetaIndex<Y> {
 
     public static MetaIndex getFlag(Class<? extends FlagWatcher> watcherClass, int flagNo) {
         for (MetaIndex type : values()) {
-            if (type.getIndex() != flagNo) {
+            if (type.getIndex() != flagNo)
                 continue;
-            }
 
-            if (!type.getFlagWatcher().isAssignableFrom(watcherClass)) {
+            if (!type.getFlagWatcher().isAssignableFrom(watcherClass))
                 continue;
-            }
 
             return type;
         }
@@ -361,9 +402,8 @@ public class MetaIndex<Y> {
         ArrayList<MetaIndex> list = new ArrayList<>();
 
         for (MetaIndex type : values()) {
-            if (!type.getFlagWatcher().isAssignableFrom(watcherClass)) {
+            if (!type.getFlagWatcher().isAssignableFrom(watcherClass))
                 continue;
-            }
 
             list.add(type);
         }
@@ -375,9 +415,8 @@ public class MetaIndex<Y> {
         int found = 0;
 
         for (MetaIndex type : values()) {
-            if (type.getFlagWatcher() != c) {
+            if (type.getFlagWatcher() != c)
                 continue;
-            }
 
             found++;
         }
@@ -393,6 +432,67 @@ public class MetaIndex<Y> {
         return _values;
     }
 
+    public static void addMetaIndexes(MetaIndex... metaIndexes) {
+        _values = Arrays.copyOf(values(), values().length + metaIndexes.length);
+
+        for (int i = values().length - metaIndexes.length, a = 0; i < values().length; i++, a++) {
+            MetaIndex index = metaIndexes[a];
+
+            for (MetaIndex metaIndex : values()) {
+                if (metaIndex.getFlagWatcher() != index.getFlagWatcher() || metaIndex.getIndex() != index.getIndex()) {
+                    continue;
+                }
+
+                System.err.println(
+                        "[LibsDisguises] MetaIndex " + metaIndex.getFlagWatcher().getSimpleName() + " at index " + metaIndex.getIndex() + " has already registered this! (" + metaIndex.getDefault() + "," + index.getDefault() + ")");
+            }
+
+            values()[i] = metaIndexes[a];
+        }
+    }
+
+    public static void setValues() {
+        try {
+            _values = new MetaIndex[0];
+
+            for (Field field : MetaIndex.class.getFields()) {
+                if (field.getType() != MetaIndex.class)
+                    continue;
+
+                MetaIndex index = (MetaIndex) field.get(null);
+
+                if (index == null)
+                    continue;
+
+                _values = Arrays.copyOf(_values, _values.length + 1);
+                _values[_values.length - 1] = index;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Returns true if success, false if the field doesn't exist
+     */
+    public static boolean setMetaIndex(String name, MetaIndex metaIndex) {
+        try {
+            Field field = MetaIndex.class.getField(name);
+            MetaIndex index = (MetaIndex) field.get(null);
+
+            field.set(null, metaIndex);
+        }
+        catch (NoSuchFieldException ex) {
+            return false;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return true;
+    }
+
     private Y _defaultValue;
     private int _index;
     private Class<? extends FlagWatcher> _watcher;
@@ -401,9 +501,6 @@ public class MetaIndex<Y> {
         _index = index;
         _watcher = watcher;
         _defaultValue = defaultValue;
-
-        _values = Arrays.copyOf(_values, _values.length + 1);
-        _values[_values.length - 1] = this;
     }
 
     public Y getDefault() {

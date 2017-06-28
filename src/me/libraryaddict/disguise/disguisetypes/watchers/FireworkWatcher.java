@@ -8,7 +8,6 @@ import me.libraryaddict.disguise.disguisetypes.MetaIndex;
 import me.libraryaddict.disguise.disguisetypes.FlagWatcher;
 
 public class FireworkWatcher extends FlagWatcher {
-
     public FireworkWatcher(Disguise disguise) {
         super(disguise);
     }

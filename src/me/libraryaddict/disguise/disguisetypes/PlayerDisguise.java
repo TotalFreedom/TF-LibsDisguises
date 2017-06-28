@@ -1,14 +1,5 @@
 package me.libraryaddict.disguise.disguisetypes;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.UUID;
-
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
@@ -17,16 +8,22 @@ import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-
 import me.libraryaddict.disguise.LibsDisguises;
 import me.libraryaddict.disguise.disguisetypes.watchers.PlayerWatcher;
 import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 import me.libraryaddict.disguise.utilities.LibsProfileLookup;
 import me.libraryaddict.disguise.utilities.ReflectionManager;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.UUID;
 
 public class PlayerDisguise extends TargetedDisguise {
-
-    private LibsProfileLookup currentLookup;
+    private transient LibsProfileLookup currentLookup;
     private WrappedGameProfile gameProfile;
     private String playerName;
     private String skinToUse;
@@ -204,18 +201,8 @@ public class PlayerDisguise extends TargetedDisguise {
     }
 
     @Override
-    public PlayerDisguise setKeepDisguiseOnEntityDespawn(boolean keepDisguise) {
-        return (PlayerDisguise) super.setKeepDisguiseOnEntityDespawn(keepDisguise);
-    }
-
-    @Override
     public PlayerDisguise setKeepDisguiseOnPlayerDeath(boolean keepDisguise) {
         return (PlayerDisguise) super.setKeepDisguiseOnPlayerDeath(keepDisguise);
-    }
-
-    @Override
-    public PlayerDisguise setKeepDisguiseOnPlayerLogout(boolean keepDisguise) {
-        return (PlayerDisguise) super.setKeepDisguiseOnPlayerLogout(keepDisguise);
     }
 
     @Override
@@ -238,17 +225,12 @@ public class PlayerDisguise extends TargetedDisguise {
 
     @Override
     public boolean startDisguise() {
-        if (isDisguiseInUse() || skinToUse == null) {
-            return super.startDisguise();
-        }
-
-        if (getGameProfile() == null) {
+        if (!isDisguiseInUse() && skinToUse != null && gameProfile == null) {
             currentLookup = new LibsProfileLookup() {
                 @Override
                 public void onLookup(WrappedGameProfile gameProfile) {
-                    if (currentLookup != this || gameProfile == null) {
+                    if (currentLookup != this || gameProfile == null)
                         return;
-                    }
 
                     setSkin(gameProfile);
 
@@ -271,7 +253,8 @@ public class PlayerDisguise extends TargetedDisguise {
         if (newSkin != null && newSkin.length() > 50) {
             try {
                 return setSkin(ReflectionManager.parseGameProfile(newSkin));
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 throw new IllegalArgumentException(
                         "The skin is too long to be a playername, but cannot be parsed to a GameProfile!");
             }
@@ -324,14 +307,14 @@ public class PlayerDisguise extends TargetedDisguise {
 
                 try {
                     for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (!canSee(player)) {
+                        if (!canSee(player))
                             continue;
-                        }
 
                         ProtocolLibrary.getProtocolManager().sendServerPacket(player, deleteTab);
                         ProtocolLibrary.getProtocolManager().sendServerPacket(player, addTab);
                     }
-                } catch (InvocationTargetException e) {
+                }
+                catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
             }

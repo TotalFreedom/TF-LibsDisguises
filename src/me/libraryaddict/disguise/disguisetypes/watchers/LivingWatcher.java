@@ -26,7 +26,6 @@ import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 import me.libraryaddict.disguise.utilities.ReflectionManager;
 
 public class LivingWatcher extends FlagWatcher {
-
     static Map<Integer, Object> list = new HashMap<>();
     static Method getId;
 
@@ -39,7 +38,8 @@ public class LivingWatcher extends FlagWatcher {
                 int id = (int) getId.invoke(null, next);
                 list.put(id, next);
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -102,7 +102,8 @@ public class LivingWatcher extends FlagWatcher {
                 f3 += (n & 0xFF) / 255.0F;
                 f4 += 1.0F;
             }
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             ex.printStackTrace();
         }
 
@@ -177,7 +178,8 @@ public class LivingWatcher extends FlagWatcher {
             for (Player player : DisguiseUtilities.getPerverts(getDisguise())) {
                 try {
                     ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet, false);
-                } catch (InvocationTargetException e) {
+                }
+                catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
             }

@@ -3,7 +3,11 @@ package me.libraryaddict.disguise;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
+import me.libraryaddict.disguise.disguisetypes.watchers.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
@@ -22,37 +26,10 @@ import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 
-import me.libraryaddict.disguise.commands.DisguiseCloneCommand;
-import me.libraryaddict.disguise.commands.DisguiseCommand;
-import me.libraryaddict.disguise.commands.DisguiseEntityCommand;
-import me.libraryaddict.disguise.commands.DisguiseHelpCommand;
-import me.libraryaddict.disguise.commands.DisguiseModifyCommand;
-import me.libraryaddict.disguise.commands.DisguiseModifyEntityCommand;
-import me.libraryaddict.disguise.commands.DisguiseModifyPlayerCommand;
-import me.libraryaddict.disguise.commands.DisguiseModifyRadiusCommand;
-import me.libraryaddict.disguise.commands.DisguisePlayerCommand;
-import me.libraryaddict.disguise.commands.DisguiseRadiusCommand;
-import me.libraryaddict.disguise.commands.DisguiseViewSelfCommand;
-import me.libraryaddict.disguise.commands.LibsDisguisesCommand;
-import me.libraryaddict.disguise.commands.UndisguiseCommand;
-import me.libraryaddict.disguise.commands.UndisguiseEntityCommand;
-import me.libraryaddict.disguise.commands.UndisguisePlayerCommand;
-import me.libraryaddict.disguise.commands.UndisguiseRadiusCommand;
+import me.libraryaddict.disguise.commands.*;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.FlagWatcher;
 import me.libraryaddict.disguise.disguisetypes.MetaIndex;
-import me.libraryaddict.disguise.disguisetypes.watchers.AgeableWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.ArrowWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.GuardianWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.InsentientWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.MinecartWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.SkeletonWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.SlimeWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.SpiderWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.TNTWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.TameableWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.ZombieWatcher;
 import me.libraryaddict.disguise.utilities.DisguiseSound;
 import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 import me.libraryaddict.disguise.utilities.DisguiseValues;
@@ -62,7 +39,6 @@ import me.libraryaddict.disguise.utilities.PacketsManager;
 import me.libraryaddict.disguise.utilities.ReflectionManager;
 
 public class LibsDisguises extends JavaPlugin {
-
     private static LibsDisguises instance;
     private DisguiseListener listener;
 
@@ -70,18 +46,11 @@ public class LibsDisguises extends JavaPlugin {
     public void onEnable() {
         try {
             Class.forName("com.comphenix.protocol.wrappers.Vector3F").getName();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             System.err.println("[LibsDisguises] Lib's Disguises failed to startup, outdated ProtocolLib!");
             System.err.println(
                     "[LibsDisguises] You need to update ProtocolLib, please try this build http://ci.dmulloy2.net/job/ProtocolLib/lastStableBuild/artifact/modules/ProtocolLib/target/ProtocolLib.jar");
-            return;
-        }
-
-        try {
-            ReflectionManager.getNmsClass("EntityEvoker").getName();
-        } catch (Exception ex) {
-            System.err.println("[LibsDisguises] Lib's Disguises failed to startup, outdated server!");
-            System.err.println("[LibsDisguises] This plugin does not offer backwards support!");
             return;
         }
 
@@ -108,7 +77,7 @@ public class LibsDisguises extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(listener, this);
 
         registerCommand("disguise", new DisguiseCommand());
-        registerCommand("undisguise", new UndisguiseCommand());;
+        registerCommand("undisguise", new UndisguiseCommand());
         registerCommand("undisguiseentity", new UndisguiseEntityCommand());
         registerCommand("disguiseentity", new DisguiseEntityCommand());
         registerCommand("disguiseradius", new DisguiseRadiusCommand(getConfig().getInt("DisguiseRadiusMax")));
@@ -119,15 +88,21 @@ public class LibsDisguises extends JavaPlugin {
         registerCommand("disguiseviewself", new DisguiseViewSelfCommand());
         registerCommand("disguisemodify", new DisguiseModifyCommand());
         registerCommand("disguisemodifyentity", new DisguiseModifyEntityCommand());
-        registerCommand("disguisemodifyplayer", new DisguiseModifyPlayerCommand());
         registerCommand("disguisemodifyradius",
                 new DisguiseModifyRadiusCommand(getConfig().getInt("DisguiseRadiusMax")));
 
         try {
             Metrics metrics = new Metrics(this);
             metrics.start();
-        } catch (IOException e) {
         }
+        catch (IOException e) {
+            // Don't print error
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        DisguiseUtilities.saveDisguises();
     }
 
     private void registerCommand(String commandName, CommandExecutor executioner) {
@@ -151,9 +126,8 @@ public class LibsDisguises extends JavaPlugin {
     }
 
     /**
-     * Here we create a nms entity for each disguise. Then grab their default
-     * values in their datawatcher. Then their sound volume for mob noises. As
-     * well as setting their watcher class and entity size.
+     * Here we create a nms entity for each disguise. Then grab their default values in their datawatcher. Then their sound volume
+     * for mob noises. As well as setting their watcher class and entity size.
      */
     private void registerValues() {
         for (DisguiseType disguiseType : DisguiseType.values()) {
@@ -161,7 +135,7 @@ public class LibsDisguises extends JavaPlugin {
                 continue;
             }
 
-            Class watcherClass = null;
+            Class watcherClass;
 
             try {
                 switch (disguiseType) {
@@ -198,12 +172,17 @@ public class LibsDisguises extends JavaPlugin {
                     case STRAY:
                         watcherClass = SkeletonWatcher.class;
                         break;
+                    case ILLUSIONER:
+                    case EVOKER:
+                        watcherClass = IllagerWizardWatcher.class;
+                        break;
                     default:
                         watcherClass = Class.forName("me.libraryaddict.disguise.disguisetypes.watchers." + toReadable(
                                 disguiseType.name()) + "Watcher");
                         break;
                 }
-            } catch (ClassNotFoundException ex) {
+            }
+            catch (ClassNotFoundException ex) {
                 // There is no explicit watcher for this entity.
                 Class entityClass = disguiseType.getEntityType().getEntityClass();
 
@@ -280,6 +259,10 @@ public class LibsDisguises extends JavaPlugin {
                 case ARROW:
                 case SPECTRAL_ARROW:
                     nmsEntityName = "TippedArrow";
+                    break;
+                case ILLUSIONER:
+                    nmsEntityName = "IllagerIllusioner";
+                    break;
                 default:
                     break;
             }
@@ -324,6 +307,7 @@ public class LibsDisguises extends JavaPlugin {
                         bukkitEntity instanceof Damageable ? ((Damageable) bukkitEntity).getMaxHealth() : 0);
 
                 WrappedDataWatcher watcher = WrappedDataWatcher.getEntityWatcher(bukkitEntity);
+                ArrayList<MetaIndex> indexes = MetaIndex.getFlags(disguiseType.getWatcherClass());
 
                 for (WrappedWatchableObject watch : watcher.getWatchableObjects()) {
                     MetaIndex flagType = MetaIndex.getFlag(watcherClass, watch.getIndex());
@@ -337,16 +321,22 @@ public class LibsDisguises extends JavaPlugin {
                         continue;
                     }
 
+                    indexes.remove(flagType);
+
                     if (ReflectionManager.convertInvalidItem(
                             flagType.getDefault()).getClass() != ReflectionManager.convertInvalidItem(
-                                    watch.getValue()).getClass()) {
+                            watch.getValue()).getClass()) {
                         System.err.println(
                                 "Mismatch of FlagType's for " + disguiseType.name() + "! Index " + watch.getIndex() + " has the wrong classtype!");
                         System.err.println(
                                 "Value is " + watch.getRawValue() + " (" + watch.getRawValue().getClass() + ") (" + nmsEntity.getClass() + ") & " + watcherClass.getSimpleName() + " which doesn't match up with " + flagType.getDefault().getClass());
                         System.err.println("Lib's Disguises will continue to load, but this will not work properly!");
-                        continue;
                     }
+                }
+
+                for (MetaIndex index : indexes) {
+                    System.out.println(
+                            disguiseType + " has MetaIndex remaining! " + index.getFlagWatcher().getSimpleName() + " at index " + index.getIndex());
                 }
 
                 DisguiseSound sound = DisguiseSound.getType(disguiseType.name());
@@ -373,7 +363,8 @@ public class LibsDisguises extends JavaPlugin {
                 }
 
                 disguiseValues.setEntitySize(ReflectionManager.getSize(bukkitEntity));
-            } catch (SecurityException | IllegalArgumentException | IllegalAccessException | FieldAccessException ex) {
+            }
+            catch (SecurityException | IllegalArgumentException | IllegalAccessException | FieldAccessException ex) {
                 System.out.print(
                         "[LibsDisguises] Uh oh! Trouble while making values for the disguise " + disguiseType.name() + "!");
                 System.out.print(
@@ -401,8 +392,7 @@ public class LibsDisguises extends JavaPlugin {
     }
 
     /**
-     * External APIs shouldn't actually need this instance. DisguiseAPI should
-     * be enough to handle most cases.
+     * External APIs shouldn't actually need this instance. DisguiseAPI should be enough to handle most cases.
      *
      * @return The instance of this plugin
      */

@@ -4,8 +4,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import me.libraryaddict.disguise.utilities.LibsPremium;
+import me.libraryaddict.disguise.utilities.TranslateType;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -15,21 +16,21 @@ import me.libraryaddict.disguise.utilities.DisguiseParser.DisguiseParseException
 import me.libraryaddict.disguise.utilities.PacketsManager;
 
 public class DisguiseConfig {
-
     public static enum DisguisePushing { // This enum has a really bad name..
-
-        MODIFY_SCOREBOARD, IGNORE_SCOREBOARD, CREATE_SCOREBOARD;
+        MODIFY_SCOREBOARD,
+        IGNORE_SCOREBOARD,
+        CREATE_SCOREBOARD;
     }
 
     private static boolean animationEnabled;
     private static boolean bedEnabled;
-    private static boolean blowDisguisesOnAttack;
+    private static boolean blowDisguisesWhenAttacking;
+    private static boolean blowDisguisesWhenAttacked;
     private static boolean collectEnabled;
     private static boolean colorizeSheep;
     private static boolean colorizeWolf;
-    private static HashMap<String, Disguise> customDisguises = new HashMap<String, Disguise>();
+    private static HashMap<String, Disguise> customDisguises = new HashMap<>();
     private static boolean disableInvisibility;
-    private static String disguiseBlownMessage;
     private static int disguiseCloneExpire;
     private static int disguiseEntityExpire;
     private static boolean displayPlayerDisguisesInTab;
@@ -40,9 +41,7 @@ public class DisguiseConfig {
     private static boolean hideDisguisedPlayers;
     private static boolean hidingArmor;
     private static boolean hidingHeldItem;
-    private static boolean keepDisguiseEntityDespawn;
     private static boolean keepDisguisePlayerDeath;
-    private static boolean keepDisguisePlayerLogout;
     private static int maxClonedDisguises;
     private static boolean maxHealthIsDisguisedEntity;
     private static boolean miscDisguisesForLivingEnabled;
@@ -55,23 +54,52 @@ public class DisguiseConfig {
     private static boolean stopShulkerDisguisesFromMoving;
     private static boolean targetDisguises;
     private static boolean undisguiseSwitchWorlds;
-    private static String updateMessage = ChatColor.RED + "[LibsDisguises] " + ChatColor.DARK_RED + "There is a update ready to be downloaded! You are using " + ChatColor.RED + "v%s" + ChatColor.DARK_RED + ", the new version is " + ChatColor.RED + "%s" + ChatColor.DARK_RED + "!";
     private static String updateNotificationPermission;
     private static boolean viewSelfDisguise;
     private static boolean witherSkullEnabled;
     private static DisguisePushing disablePushing = DisguisePushing.MODIFY_SCOREBOARD;
+    private static boolean saveCache;
+    private static boolean updatePlayerCache;
+    private static boolean savePlayerDisguises;
+    private static boolean saveEntityDisguises;
+    private static boolean useTranslations;
 
     public static Entry<String, Disguise> getCustomDisguise(String disguise) {
         for (Entry<String, Disguise> entry : customDisguises.entrySet()) {
-            if (!entry.getKey().equalsIgnoreCase(disguise) && !entry.getKey().replaceAll("_", "").equalsIgnoreCase(
-                    disguise)) {
+            if (!entry.getKey().equalsIgnoreCase(disguise) && !entry.getKey().replaceAll("_", "")
+                    .equalsIgnoreCase(disguise))
                 continue;
-            }
 
             return entry;
         }
 
         return null;
+    }
+
+    public static boolean isSavePlayerDisguises() {
+        return savePlayerDisguises;
+    }
+
+    public static boolean isUseTranslations() {
+        return useTranslations;
+    }
+
+    public static void setUseTranslations(boolean setUseTranslations) {
+        useTranslations = setUseTranslations;
+
+        TranslateType.reloadTranslations();
+    }
+
+    public static boolean isSaveEntityDisguises() {
+        return saveEntityDisguises;
+    }
+
+    public static void setSavePlayerDisguises(boolean saveDisguises) {
+        savePlayerDisguises = saveDisguises;
+    }
+
+    public static void setSaveEntityDisguises(boolean saveDisguises) {
+        saveEntityDisguises = saveDisguises;
     }
 
     public static DisguisePushing getPushingOption() {
@@ -80,10 +108,6 @@ public class DisguiseConfig {
 
     public static HashMap<String, Disguise> getCustomDisguises() {
         return customDisguises;
-    }
-
-    public static String getDisguiseBlownMessage() {
-        return disguiseBlownMessage;
     }
 
     public static int getDisguiseCloneExpire() {
@@ -98,12 +122,24 @@ public class DisguiseConfig {
         return maxClonedDisguises;
     }
 
-    public static String getUpdateMessage() {
-        return updateMessage;
-    }
-
     public static String getUpdateNotificationPermission() {
         return updateNotificationPermission;
+    }
+
+    public static boolean isSaveGameProfiles() {
+        return saveCache;
+    }
+
+    public static void setSaveGameProfiles(boolean doCache) {
+        saveCache = doCache;
+    }
+
+    public static boolean isUpdateGameProfiles() {
+        return updatePlayerCache;
+    }
+
+    public static void setUpdateGameProfiles(boolean setUpdatePlayerCache) {
+        updatePlayerCache = setUpdatePlayerCache;
     }
 
     public static void initConfig(ConfigurationSection config) {
@@ -121,11 +157,11 @@ public class DisguiseConfig {
         setNameAboveHeadAlwaysVisible(config.getBoolean("NameAboveHeadAlwaysVisible"));
         setModifyBoundingBox(config.getBoolean("ModifyBoundingBox"));
         setMonstersIgnoreDisguises(config.getBoolean("MonstersIgnoreDisguises"));
-        setDisguiseBlownOnAttack(config.getBoolean("BlowDisguises"));
-        setDisguiseBlownMessage(ChatColor.translateAlternateColorCodes('&', config.getString("BlownDisguiseMessage")));
+        setDisguiseBlownWhenAttacking(
+                config.getBoolean("BlowDisguises", config.getBoolean("BlowDisguisesWhenAttacking")));
+        setDisguiseBlownWhenAttacked(
+                config.getBoolean("BlowDisguises", config.getBoolean("BlowDisguisesWhenAttacked")));
         setKeepDisguiseOnPlayerDeath(config.getBoolean("KeepDisguises.PlayerDeath"));
-        setKeepDisguiseOnPlayerLogout(config.getBoolean("KeepDisguises.PlayerLogout"));
-        setKeepDisguiseOnEntityDespawn(config.getBoolean("KeepDisguises.EntityDespawn"));
         setMiscDisguisesForLivingEnabled(config.getBoolean("MiscDisguisesForLiving"));
         setMovementPacketsEnabled(config.getBoolean("PacketsEnabled.Movement"));
         setWitherSkullPacketsEnabled(config.getBoolean("PacketsEnabled.WitherSkull"));
@@ -147,28 +183,36 @@ public class DisguiseConfig {
         setHideDisguisedPlayers(config.getBoolean("HideDisguisedPlayersFromTab"));
         setShowDisguisedPlayersInTab(config.getBoolean("ShowPlayerDisguisesInTab"));
         setDisabledInvisibility(config.getBoolean("DisableInvisibility"));
+        setSaveGameProfiles(config.getBoolean("SaveGameProfiles"));
+        setUpdateGameProfiles(config.getBoolean("UpdateGameProfiles"));
+        setSavePlayerDisguises(config.getBoolean("SaveDisguises.Players"));
+        setSaveEntityDisguises(config.getBoolean("SaveDisguises.Entities"));
+        setUseTranslations(config.getBoolean("Translations"));
+
+        if (!LibsPremium.isPremium() && (isSavePlayerDisguises() || isSaveEntityDisguises())) {
+            System.out.println("[LibsDisguises] You must purchase the plugin to use saved disguises!");
+        }
 
         try {
-            String option = config.getString("SelfDisguisesScoreboard",
-                    DisguisePushing.MODIFY_SCOREBOARD.name()).toUpperCase();
+            String option = config.getString("SelfDisguisesScoreboard", DisguisePushing.MODIFY_SCOREBOARD.name())
+                    .toUpperCase();
 
-            if (!option.endsWith("_SCOREBOARD")) {
+            if (!option.endsWith("_SCOREBOARD"))
                 option += "_SCOREBOARD";
-            }
 
             disablePushing = DisguisePushing.valueOf(option);
-        } catch (Exception ex) {
-            System.out.println("[LibsDisguises] Cannot parse '" + config.getString(
-                    "SelfDisguisesScoreboard") + "' to a valid option for SelfDisguisesTeam");
+        }
+        catch (Exception ex) {
+            System.out.println("[LibsDisguises] Cannot parse '" + config
+                    .getString("SelfDisguisesScoreboard") + "' to a valid option for SelfDisguisesTeam");
         }
 
         customDisguises.clear();
 
         File disguisesFile = new File("plugins/LibsDisguises/disguises.yml");
 
-        if (!disguisesFile.exists()) {
+        if (!disguisesFile.exists())
             return;
-        }
 
         YamlConfiguration disguisesConfig = YamlConfiguration.loadConfiguration(disguisesFile);
 
@@ -188,26 +232,30 @@ public class DisguiseConfig {
             }
 
             try {
-                Disguise disguise = DisguiseParser.parseDisguise(Bukkit.getConsoleSender(), "disguise",
-                        toParse.split(" "), DisguiseParser.getPermissions(Bukkit.getConsoleSender(), "disguise"));
+                Disguise disguise = DisguiseParser
+                        .parseDisguise(Bukkit.getConsoleSender(), "disguise", toParse.split(" "),
+                                DisguiseParser.getPermissions(Bukkit.getConsoleSender(), "disguise"));
 
                 customDisguises.put(key, disguise);
 
                 System.out.println("[LibsDisguises] Loaded custom disguise " + key);
-            } catch (DisguiseParseException e) {
+            }
+            catch (DisguiseParseException e) {
                 System.err.println(
-                        "[LibsDisguises] Error while loading custom disguise '" + key + "'" + (e.getMessage() == null ? "" : ": " + e.getMessage()));
+                        "[LibsDisguises] Error while loading custom disguise '" + key + "'" + (e.getMessage() == null ?
+                                "" : ": " + e.getMessage()));
 
-                if (e.getMessage() == null) {
+                if (e.getMessage() == null)
                     e.printStackTrace();
-                }
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         System.out.println(
-                "[LibsDisguises] Loaded " + customDisguises.size() + " custom disguise" + (customDisguises.size() == 1 ? "" : "s"));
+                "[LibsDisguises] Loaded " + customDisguises.size() + " custom disguise" + (customDisguises.size() == 1 ?
+                        "" : "s"));
     }
 
     public static boolean isAnimationPacketsEnabled() {
@@ -226,8 +274,12 @@ public class DisguiseConfig {
         return disableInvisibility;
     }
 
-    public static boolean isDisguiseBlownOnAttack() {
-        return blowDisguisesOnAttack;
+    public static boolean isDisguiseBlownWhenAttacking() {
+        return blowDisguisesWhenAttacking;
+    }
+
+    public static boolean isDisguiseBlownWhenAttacked() {
+        return blowDisguisesWhenAttacked;
     }
 
     public static boolean isEntityAnimationsAdded() {
@@ -247,31 +299,21 @@ public class DisguiseConfig {
     }
 
     /**
-     * Is the plugin modifying the inventory packets so that players when self
-     * disguised, do not see their armor floating around
+     * Is the plugin modifying the inventory packets so that players when self disguised, do not see their armor floating around
      */
     public static boolean isHidingArmorFromSelf() {
         return hidingArmor;
     }
 
     /**
-     * Does the plugin appear to remove the item they are holding, to prevent a
-     * floating sword when they are viewing self disguise
+     * Does the plugin appear to remove the item they are holding, to prevent a floating sword when they are viewing self disguise
      */
     public static boolean isHidingHeldItemFromSelf() {
         return hidingHeldItem;
     }
 
-    public static boolean isKeepDisguiseOnEntityDespawn() {
-        return keepDisguiseEntityDespawn;
-    }
-
     public static boolean isKeepDisguiseOnPlayerDeath() {
         return keepDisguisePlayerDeath;
-    }
-
-    public static boolean isKeepDisguiseOnPlayerLogout() {
-        return keepDisguisePlayerLogout;
     }
 
     public static boolean isMaxHealthDeterminedByDisguisedEntity() {
@@ -391,12 +433,12 @@ public class DisguiseConfig {
         disableInvisibility = disableInvis;
     }
 
-    public static void setDisguiseBlownMessage(String newMessage) {
-        disguiseBlownMessage = newMessage;
+    public static void setDisguiseBlownWhenAttacking(boolean blowDisguise) {
+        blowDisguisesWhenAttacking = blowDisguise;
     }
 
-    public static void setDisguiseBlownOnAttack(boolean blowDisguise) {
-        blowDisguisesOnAttack = blowDisguise;
+    public static void setDisguiseBlownWhenAttacked(boolean blowDisguise) {
+        blowDisguisesWhenAttacked = blowDisguise;
     }
 
     public static void setDisguiseCloneExpire(int newExpires) {
@@ -448,8 +490,7 @@ public class DisguiseConfig {
     }
 
     /**
-     * Does the plugin appear to remove the item they are holding, to prevent a
-     * floating sword when they are viewing self disguise
+     * Does the plugin appear to remove the item they are holding, to prevent a floating sword when they are viewing self disguise
      */
     public static void setHideHeldItemFromSelf(boolean hideHelditem) {
         if (hidingHeldItem != hideHelditem) {
@@ -459,16 +500,8 @@ public class DisguiseConfig {
         }
     }
 
-    public static void setKeepDisguiseOnEntityDespawn(boolean keepDisguise) {
-        keepDisguiseEntityDespawn = keepDisguise;
-    }
-
     public static void setKeepDisguiseOnPlayerDeath(boolean keepDisguise) {
         keepDisguisePlayerDeath = keepDisguise;
-    }
-
-    public static void setKeepDisguiseOnPlayerLogout(boolean keepDisguise) {
-        keepDisguisePlayerLogout = keepDisguise;
     }
 
     public static void setMaxClonedDisguises(int newMax) {
@@ -538,17 +571,12 @@ public class DisguiseConfig {
         undisguiseSwitchWorlds = isUndisguise;
     }
 
-    public static void setUpdateMessage(String newMessage) {
-        updateMessage = newMessage;
-    }
-
     public static void setUpdateNotificationPermission(String newPermission) {
         updateNotificationPermission = newPermission;
     }
 
     /**
-     * Disable velocity packets being sent for w/e reason. Maybe you want every
-     * ounce of performance you can get?
+     * Disable velocity packets being sent for w/e reason. Maybe you want every ounce of performance you can get?
      *
      * @param sendVelocityPackets
      */

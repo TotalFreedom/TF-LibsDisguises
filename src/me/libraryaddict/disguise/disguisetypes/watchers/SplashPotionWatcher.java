@@ -8,7 +8,6 @@ import me.libraryaddict.disguise.disguisetypes.FlagWatcher;
 import me.libraryaddict.disguise.utilities.DisguiseUtilities;
 
 public class SplashPotionWatcher extends FlagWatcher {
-
     private int potionId;
 
     public SplashPotionWatcher(Disguise disguise) {

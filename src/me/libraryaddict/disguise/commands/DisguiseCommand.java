@@ -1,6 +1,7 @@
 package me.libraryaddict.disguise.commands;
 
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import me.libraryaddict.disguise.DisallowedDisguises;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.DisguiseConfig;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
@@ -25,7 +26,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import me.libraryaddict.disguise.DisallowedDisguises;
 
 public class DisguiseCommand extends DisguiseBaseCommand implements TabCompleter {
 
@@ -45,14 +45,16 @@ public class DisguiseCommand extends DisguiseBaseCommand implements TabCompleter
 
         try {
             disguise = DisguiseParser.parseDisguise(sender, getPermNode(), args, getPermissions(sender));
-        } catch (DisguiseParseException ex) {
+        }
+        catch (DisguiseParseException ex) {
             if (ex.getMessage() != null) {
                 sender.sendMessage(ex.getMessage());
             }
 
             return true;
-        } catch (Exception ex) {
-
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
             return true;
         }
 
@@ -69,23 +71,19 @@ public class DisguiseCommand extends DisguiseBaseCommand implements TabCompleter
         if (!DisallowedDisguises.disabled) {
 
             if (DisallowedDisguises.isAllowed(disguise)) {
-
                 DisguiseAPI.disguiseToAll((Player) sender, disguise);
-
-            } else {
-                sender.sendMessage(ChatColor.RED + "That disguise is forbidden.");
-                return true;
-            }
+           } else {
+               sender.sendMessage(ChatColor.RED + "That disguise is forbidden.");
+               return true;
+           }
         } else {
             sender.sendMessage(ChatColor.RED + "Disguises are disabled.");
             return true;
         }
 
-        if (disguise.isDisguiseInUse()) {
-            sender.sendMessage(ChatColor.RED + "Now disguised as a " + disguise.getType().toReadable());
-        } else {
-            sender.sendMessage(ChatColor.RED + "Failed to disguise as a " + disguise.getType().toReadable());
-        }
+        DisguiseAPI.disguiseToAll((Player) sender, disguise);
+
+        sender.sendMessage(ChatColor.RED + "Now disguised as a " + disguise.getType().toReadable());
 
         return true;
     }
@@ -104,9 +102,8 @@ public class DisguiseCommand extends DisguiseBaseCommand implements TabCompleter
         } else {
             DisguisePerm disguiseType = DisguiseParser.getDisguisePerm(args[0]);
 
-            if (disguiseType == null) {
+            if (disguiseType == null)
                 return filterTabs(tabs, origArgs);
-            }
             // No disguisetype specificied, cannot help.
 
             if (args.length == 1 && disguiseType.getType() == DisguiseType.PLAYER) {
@@ -120,9 +117,8 @@ public class DisguiseCommand extends DisguiseBaseCommand implements TabCompleter
                     for (int i = disguiseType.getType() == DisguiseType.PLAYER ? 2 : 1; i < args.length; i++) {
                         String arg = args[i];
 
-                        if (!method.getName().equalsIgnoreCase(arg)) {
+                        if (!method.getName().equalsIgnoreCase(arg))
                             continue;
-                        }
 
                         usedOptions.add(arg);
                     }
@@ -137,9 +133,8 @@ public class DisguiseCommand extends DisguiseBaseCommand implements TabCompleter
                         ParamInfo info = ReflectionFlagWatchers.getParamInfo(disguiseType, prevArg);
 
                         if (info != null) {
-                            if (info.getParamClass() != boolean.class) {
+                            if (info.getParamClass() != boolean.class)
                                 addMethods = false;
-                            }
 
                             if (info.isEnums()) {
                                 for (String e : info.getEnums(origArgs[origArgs.length - 1])) {

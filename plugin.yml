@@ -4,7 +4,7 @@ description: A disguise plugin with various disguises.
 version: ${project.version}
 author: libraryaddict
 authors: [Byteflux, Navid K.]
-softdepend: [ProtocolLib]
+depend: [ProtocolLib]
 commands:
     libsdisguises:
       permission: libsdisguises.seecmd.libsdisguises
@@ -21,7 +21,6 @@ commands:
       aliases: [dhelp, dishelp]
       permission: libsdisguises.seecmd.disguisehelp
       description: Help command for LibsDisguises.
-      description: Disguise another player as an entity.
     disguiseradius:
       aliases: [disradius, dradius]
       permission: libsdisguises.seecmd.disguiseradius
@@ -47,19 +46,15 @@ commands:
       permission: libsdisguises.seecmd.viewself
       description: Toggle seeing your own disguise on or off.
     disguisemodify:
-      aliases: [dmodify]
+      aliases: [dmodify, dmod]
       permission: libsdisguises.seecmd.disguisemodify
       description: Modify your own disguise
-    disguisemodifyplayer:
-      aliases: [dmodifyplayer]
-      permission: libsdisguises.seecmd.disguisemodifyplayer
-      description: Modify the disguise of a player
     disguisemodifyradius:
-      aliases: [dmodifyradius]
+      aliases: [dmodifyradius, dmodradius]
       permission: libsdisguises.seecmd.disguisemodifyradius
       description: Modify disguises in a radius
     disguisemodifyentity:
-      aliases: [dmodifyentity]
+      aliases: [dmodifyentity, dmodentity]
       permission: libsdisguises.seecmd.disguisemodifyentity
       description: Modify a disguise by right clicking them
 
