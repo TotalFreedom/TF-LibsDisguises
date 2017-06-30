@@ -7,7 +7,6 @@ import me.libraryaddict.disguise.disguisetypes.FlagWatcher;
 import me.libraryaddict.disguise.disguisetypes.MetaIndex;
 
 public class BoatWatcher extends FlagWatcher {
-
     public BoatWatcher(Disguise disguise) {
         super(disguise);
 

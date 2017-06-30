@@ -13,7 +13,6 @@ import me.libraryaddict.disguise.disguisetypes.watchers.PaintingWatcher;
 import me.libraryaddict.disguise.disguisetypes.watchers.SplashPotionWatcher;
 
 public class MiscDisguise extends TargetedDisguise {
-
     private int id = -1, data = 0;
 
     public MiscDisguise(DisguiseType disguiseType) {
@@ -28,9 +27,9 @@ public class MiscDisguise extends TargetedDisguise {
         super(disguiseType);
 
         if (!disguiseType.isMisc()) {
-            throw new InvalidParameterException("Expected a non-living DisguiseType while constructing MiscDisguise. Received "
-                    + disguiseType + " instead. Please use " + (disguiseType.isPlayer() ? "PlayerDisguise" : "MobDisguise")
-                    + " instead");
+            throw new InvalidParameterException(
+                    "Expected a non-living DisguiseType while constructing MiscDisguise. Received " + disguiseType + " instead. Please use " + (
+                            disguiseType.isPlayer() ? "PlayerDisguise" : "MobDisguise") + " instead");
         }
 
         createDisguise();
@@ -43,7 +42,8 @@ public class MiscDisguise extends TargetedDisguise {
                 ((PaintingWatcher) getWatcher()).setArt(Art.values()[Math.max(0, id) % Art.values().length]);
                 break;
             case FALLING_BLOCK:
-                ((FallingBlockWatcher) getWatcher()).setBlock(new ItemStack(Math.max(1, id), 1, (short) Math.max(0, data)));
+                ((FallingBlockWatcher) getWatcher()).setBlock(
+                        new ItemStack(Math.max(1, id), 1, (short) Math.max(0, data)));
                 break;
             case SPLASH_POTION:
                 ((SplashPotionWatcher) getWatcher()).setPotionId(Math.max(0, id));
@@ -162,18 +162,8 @@ public class MiscDisguise extends TargetedDisguise {
     }
 
     @Override
-    public MiscDisguise setKeepDisguiseOnEntityDespawn(boolean keepDisguise) {
-        return (MiscDisguise) super.setKeepDisguiseOnEntityDespawn(keepDisguise);
-    }
-
-    @Override
     public MiscDisguise setKeepDisguiseOnPlayerDeath(boolean keepDisguise) {
         return (MiscDisguise) super.setKeepDisguiseOnPlayerDeath(keepDisguise);
-    }
-
-    @Override
-    public MiscDisguise setKeepDisguiseOnPlayerLogout(boolean keepDisguise) {
-        return (MiscDisguise) super.setKeepDisguiseOnPlayerLogout(keepDisguise);
     }
 
     @Override
@@ -210,5 +200,4 @@ public class MiscDisguise extends TargetedDisguise {
     public MiscDisguise silentlyRemovePlayer(String playername) {
         return (MiscDisguise) super.silentlyRemovePlayer(playername);
     }
-
 }

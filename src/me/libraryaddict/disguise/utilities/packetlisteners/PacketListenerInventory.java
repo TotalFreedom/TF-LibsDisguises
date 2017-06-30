@@ -24,7 +24,6 @@ import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.utilities.ReflectionManager;
 
 public class PacketListenerInventory extends PacketAdapter {
-
     private LibsDisguises libsDisguises;
 
     public PacketListenerInventory(LibsDisguises plugin) {
@@ -36,16 +35,13 @@ public class PacketListenerInventory extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(final PacketEvent event) {
-        if (event.isCancelled()) {
+        if (event.isCancelled())
             return;
-        }
 
         final Player player = event.getPlayer();
 
         if (player.getName().contains("UNKNOWN[")) // If the player is temporary
-        {
             return;
-        }
 
         if (player instanceof com.comphenix.net.sf.cglib.proxy.Factory || player.getVehicle() != null) {
             return;
@@ -77,12 +73,14 @@ public class PacketListenerInventory extends PacketAdapter {
 
                             try {
                                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet, false);
-                            } catch (InvocationTargetException e) {
+                            }
+                            catch (InvocationTargetException e) {
                                 e.printStackTrace();
                             }
                         }
                     }
-                } else if (slot >= 36 && slot <= 45) {
+                }
+                else if (slot >= 36 && slot <= 45) {
                     if (disguise.isHidingHeldItemFromSelf()) {
                         int currentSlot = player.getInventory().getHeldItemSlot();
 
@@ -99,14 +97,16 @@ public class PacketListenerInventory extends PacketAdapter {
 
                                 try {
                                     ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet, false);
-                                } catch (InvocationTargetException e) {
+                                }
+                                catch (InvocationTargetException e) {
                                     e.printStackTrace();
                                 }
                             }
                         }
                     }
                 }
-            } // If the player switched item, aka he moved from slot 1 to slot 2
+            }
+            // If the player switched item, aka he moved from slot 1 to slot 2
             else if (event.getPacketType() == PacketType.Play.Client.HELD_ITEM_SLOT) {
                 if (disguise.isHidingHeldItemFromSelf()) {
                     // From logging, it seems that both bukkit and nms uses the same thing for the slot switching.
@@ -126,7 +126,8 @@ public class PacketListenerInventory extends PacketAdapter {
 
                         try {
                             ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet, false);
-                        } catch (InvocationTargetException e) {
+                        }
+                        catch (InvocationTargetException e) {
                             e.printStackTrace();
                         }
                     }
@@ -146,12 +147,14 @@ public class PacketListenerInventory extends PacketAdapter {
 
                         try {
                             ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet, false);
-                        } catch (InvocationTargetException e) {
+                        }
+                        catch (InvocationTargetException e) {
                             e.printStackTrace();
                         }
                     }
                 }
-            } else if (event.getPacketType() == PacketType.Play.Client.WINDOW_CLICK) {
+            }
+            else if (event.getPacketType() == PacketType.Play.Client.WINDOW_CLICK) {
                 int slot = event.getPacket().getIntegers().read(1);
 
                 org.bukkit.inventory.ItemStack clickedItem;
@@ -171,7 +174,8 @@ public class PacketListenerInventory extends PacketAdapter {
                     }
 
                     return;
-                } else {
+                }
+                else {
                     // If its not a player inventory click
                     // Shift clicking is exempted for the item in hand..
                     if (event.getPacket().getIntegers().read(0) != 0) {
@@ -195,12 +199,14 @@ public class PacketListenerInventory extends PacketAdapter {
 
                             try {
                                 ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet, false);
-                            } catch (InvocationTargetException e) {
+                            }
+                            catch (InvocationTargetException e) {
                                 e.printStackTrace();
                             }
                         }
                         // Else if its a hotbar slot
-                    } else if (slot >= 36 && slot <= 45) {
+                    }
+                    else if (slot >= 36 && slot <= 45) {
                         if (disguise.isHidingHeldItemFromSelf()) {
                             int currentSlot = player.getInventory().getHeldItemSlot();
 
@@ -215,7 +221,8 @@ public class PacketListenerInventory extends PacketAdapter {
 
                                 try {
                                     ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet, false);
-                                } catch (InvocationTargetException e) {
+                                }
+                                catch (InvocationTargetException e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -245,6 +252,7 @@ public class PacketListenerInventory extends PacketAdapter {
         }
 
         // If the player is disguised, views self disguises and is hiding a item.
+
         // If the server is setting the slot
         // Need to set it to air if its in a place it shouldn't be.
         // Things such as picking up a item, spawned in item. Plugin sets the item. etc. Will fire this
@@ -272,7 +280,8 @@ public class PacketListenerInventory extends PacketAdapter {
                     }
                 }
                 // Else if its a hotbar slot
-            } else if (slot >= 36 && slot <= 45) {
+            }
+            else if (slot >= 36 && slot <= 45) {
                 if (disguise.isHidingHeldItemFromSelf()) {
                     int currentSlot = player.getInventory().getHeldItemSlot();
 
@@ -288,7 +297,8 @@ public class PacketListenerInventory extends PacketAdapter {
                     }
                 }
             }
-        } else if (event.getPacketType() == Server.WINDOW_ITEMS) {
+        }
+        else if (event.getPacketType() == Server.WINDOW_ITEMS) {
             event.setPacket(event.getPacket().shallowClone());
 
             StructureModifier<List<ItemStack>> mods = event.getPacket().getItemListModifier();
@@ -307,7 +317,8 @@ public class PacketListenerInventory extends PacketAdapter {
                         }
                     }
                     // Else if its a hotbar slot
-                } else if (slot >= 36 && slot <= 45) {
+                }
+                else if (slot >= 36 && slot <= 45) {
                     if (disguise.isHidingHeldItemFromSelf()) {
                         int currentSlot = player.getInventory().getHeldItemSlot();
 

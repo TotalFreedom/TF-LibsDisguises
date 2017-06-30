@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import me.libraryaddict.disguise.DisallowedDisguises;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -24,7 +25,7 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         for (String node : new String[]{
-            "disguise", "disguiseradius", "disguiseentity", "disguiseplayer"
+            "disguise", "disguiseradius", "disguiseentity"
         }) {
             HashMap<DisguisePerm, HashMap<ArrayList<String>, Boolean>> permMap = DisguiseParser.getPermissions(sender,
                     "libsdisguises." + node + ".");
@@ -60,6 +61,11 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
 
                     if (!permMap.containsKey(type)) {
                         sender.sendMessage(ChatColor.RED + "You do not have permission for that disguise!");
+                        return true;
+                    }
+                    
+                    if (!DisallowedDisguises.isAllowed(type.getType())) {
+                        sender.sendMessage(ChatColor.RED + "That disguise is forbidden.");
                         return true;
                     }
 
@@ -162,7 +168,10 @@ public class DisguiseHelpCommand extends DisguiseBaseCommand implements TabCompl
                         continue;
                     }
 
-                    tabs.add(type.toReadable().replaceAll(" ", "_"));
+                    if (DisallowedDisguises.isAllowed(type.getType()))
+                    {
+                        tabs.add(type.toReadable().replaceAll(" ", "_"));
+                    }
                 }
 
                 for (ParamInfo s : ReflectionFlagWatchers.getParamInfos()) {
