@@ -280,9 +280,6 @@ public class DisguiseListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player p = event.getPlayer();
 
-        if (latestVersion != null && p.hasPermission(DisguiseConfig.getUpdateNotificationPermission())) {
-            p.sendMessage(LibsMsg.UPDATE_READY.get(currentVersion, latestVersion));
-        }
 
         if (DisguiseConfig.isBedPacketsEnabled()) {
             chunkMove(p, p.getLocation(), null);
